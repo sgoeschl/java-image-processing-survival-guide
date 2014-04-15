@@ -23,6 +23,17 @@ In short - it looked difficult now.
 
 ## 2. Dissecting the Problem
 
+* JAI for image format conversion
+* Open-source library for image scaling 
+* Apache PDFBox for PDF to image conversion
 
+## 3. Problems Along the Way
 
+* Alpha-channel handling is broken in Java (http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6371389)
+* CMYK color space is not supported
+* missing image metadata breaks DPI settings
+* out of memory attack - http://www.aerasec.de/security/advisories/decompression-bomb-vulnerability.html
+* TIFF is not supported transparently using Java ImageIO
+* Efficiently creating multiple thumbnails
+* Memory usage of conversion
 
