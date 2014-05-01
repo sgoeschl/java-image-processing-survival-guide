@@ -2,11 +2,11 @@
 
 Authors: Siegfried Goeschl, Harald Kuhr
 
-Keywords: Java, Image Scaling, Image Conversion, ImageMagick, JMagick, PDFBox, Java Advanced Imaging API, JAI, TwelveMonkeys ImageIO Plugins
+Keywords: Java, Image Scaling, Image Conversion, ImageMagick, JMagick, PDFBox, Java Advanced Imaging API, JAI, ImageIO API, TwelveMonkeys ImageIO Plugins
 
 ## Abstract
 
-This paper provides real-life experience in replacing an ImageMagick/JMagick image conversion & scaling with a pure Java implementation covering Apache PDFBox, Java Advanced Imaging API (JAI), TwelveMonkey ImageIO plugins and different Java-based image-scaling libraries. 
+This paper provides real-life experience in replacing an ImageMagick/JMagick image conversion & scaling with a pure Java implementation covering Apache PDFBox, Java Advanced Imaging API (JAI), TwelveMonkeys ImageIO plugins and different Java-based image-scaling libraries. 
 
 ## 1. The Customer Call
 
