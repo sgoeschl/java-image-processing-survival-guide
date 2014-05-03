@@ -35,7 +35,7 @@ In short - it looks somehow difficult now.
 Tackling a difficult problem requires some "divide and conquer" to keep your brain operational
 
 * Use Apache PDFBox for PDF to image conversion
-* Use JAI for converting image formats to JPEG
+* Use ImageIO JAI for converting image formats to JPEG
 * Use a Java-based business-friendly library for scaling the images
 * Hide the mechanics behind a Java implementation to be exposed to the caller
 
@@ -73,9 +73,22 @@ In short - that rocks.
 
 ## 4. Convert Image Formats to JPEG
 
-The heavy lifting of image format conversion is provided by the Java Advanced Image (JAI) API - "The Java Advanced Imaging API provides a set of object-oriented interfaces that support a simple, high-level programming model which lets you manipulate images easily" (http://www.oracle.com/technetwork/java/javase/tech/jai-142803.html).
+[I think the we should promote using the ImageIO API over JAI :-)]
 
-* TIFF is not supported transparently using Java ImageIO
+-The heavy lifting of image format conversion is provided by the Java Advanced Image (JAI) API - "The Java Advanced Imaging API provides a set of object-oriented interfaces that support a simple, high-level programming model which lets you manipulate images easily"- (http://www.oracle.com/technetwork/java/javase/tech/jai-142803.html).
+
+The heavy lifting of image format conversion is provided by the Java ImageIO API (the javax.imageio package). 
+
+"This package contains the basic classes and interfaces for describing the contents of image files, including metadata and thumbnails (IIOImage); for controlling the image reading process (ImageReader, ImageReadParam, and ImageTypeSpecifier) and image writing process (ImageWriter and ImageWriteParam); for performing transcoding between formats (ImageTranscoder), and for reporting errors (IIOException)." (http://docs.oracle.com/javase/7/docs/api/javax/imageio/package-summary.html#package_description)
+
+
+* TIFF is not supported out of the box using Java ImageIO
+
+This is where JAI comes in. Supports many TIFF flavors, but requires native libraries installed to do so. The fall-back Java version is limitted.
+
+* Many JPEGs can't be out of the box read using ImageIO
+
+JAI has some extra support, but many JPEG images can't be read using JAI either. Requires native libraries.
 
 ## 5. Scaling Images Efficiently
 
@@ -99,6 +112,9 @@ A naive implementation could use the original image to create the five scaled do
 The CPU time needed for scaling depends mostly on the size of the source and target image and using a naive implementation could use the original image to create the five scaled down instances. Consequently the production code uses an already scaled image to create the next smaller image which has a dramatic impact on performance as shown below
 
 [TBD]
+
+[Not sure if you are aware of this, but TwelveMonkeys comes with its own set of scaling algorithms, very similar to those of ImageMagick (based on the same original C source). Also, it comes with Servlet filters for a completely different on-the-fly scaling approach, that has been used with success on many projects, but I'm not sure if we want to go too much in-depth on that.]
+
 
 ## 6. Test With Real-Life Data
 
