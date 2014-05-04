@@ -15,7 +15,8 @@ It was one of those perfect days starting with a promising customer call - "How 
 What are the customer's problems and requirements? ImageMagick is a native image-processing library which is wrapped by JMagick using JNI (Java Native Interface) to expose a Java interface but this approach has a few short-comings
 
 * Installing the ImageMagick binaries for different target platforms is not straight-forward
-* JMagick does not support the most current ImageMagick libraries which contains must-have bug fixes and improvements
+* JMagick does not support the most current ImageMagick libraries which contains bug fixes and improvements
+* JMagick does not pass the image quality parameter correctly resulting in larger images than desired 
 * Getting ImageMagick/JMagick to run on Mac OS failed miserably which left the Macbook-based developers unhappy
 * Any ImageMagick exceptions escaping through the JNI layer causes the JVM to terminate
 
@@ -48,12 +49,10 @@ Quoting from the source - "The Apache PDFBox™ library is an open source Java t
 The task at hand is a PDF to JPEG conversion which is perfectly doable but not straight-forward since the functionality is implemented as part of the PDFBox command line tools (see http://pdfbox.apache.org/commandline/#pdfToImage). With little effort the functionality was extracted in the following Java code snippet
 
 ```
-List<BufferedImage> pdfToImage(Object source, int startPage, int endPage, int resolution, float quality) {
-
+List<BufferedImage> pdfToImage(Object source,int startPage,int endPage,int resolution,float quality) {
     List<BufferedImage> result = new ArrayList<BufferedImage>();
     PDDocument pdDocument = loadPDDocument(source);
     List<PDPage> pages = pdDocument.getDocumentCatalog().getAllPages();
-
     for (int i = startPage - 1; i < endPage && i < pages.size(); i++) {
         PDPage page = pages.get(i);
         BufferedImage image = page.convertToImage(BufferedImage.TYPE_INT_RGB, resolution);
