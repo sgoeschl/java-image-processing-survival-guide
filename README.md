@@ -150,8 +150,9 @@ The CPU time needed for scaling depends mostly on the size of the source and tar
 
 [TBD]
 
-[Not sure if you are aware of this, but the TwelveMonkeys library also comes with its own resampling module, that should create very high quality resampled results. The algorithms are very similar to those of ImageMagick and others (based on the same original C source), and is a Java port of the algorithms found in the "ancient" book Graphic Gems III (Academic Press, 1994.). 
+[Harald: Not sure if you are aware of this, but the TwelveMonkeys library also comes with its own resampling module, that should create very high quality resampled results. The algorithms are very similar to those of ImageMagick and others (based on the same original C source), and is a Java port of the algorithms found in the "ancient" book Graphic Gems III (Academic Press, 1994.). 
 I've never measured performance against the options you considered, but I believe the quality should be at least as good. Probably slower. Also, it comes with Servlet filters for a completely different on-the-fly scaling approach, that has been used with success on many projects, but I'm not sure if we want to go too much in-depth on that.]
+[Sigi: no I was not aware of that - we can add a chapter covering "on-the-fly scaling"]
 
 
 ## 7. Test With Real-Life Data
