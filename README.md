@@ -25,7 +25,7 @@ On the other hand ImageMagick is a powerful and field-proven piece of software u
 * Processing 5 million user-uploaded images per month
 * Converting arbitrary image formats such as PNG, TIFF and BMP into JPEG
 * Converting PDF documents to a preview image using GhostScript under the hood
-* Creating five thumbnail images with varying size lution based on the user-uploaded image
+* Creating five thumbnail images with varying resolution based on the user-uploaded image
 * Efficiently handling a peak load of 45 image per minute and server
 * Apply image sharpening to improve quality
 
@@ -71,37 +71,63 @@ BufferImage pdfPreviewImage = pdfToImage(pdfFile, 1, 2, 72, 0.8f).get(0);
 [Harald: I think the we should promote using the ImageIO API over JAI :-)]
 [Sigi: I would like to use my original approach to hightlight the short-comings]
 
--The heavy lifting of image format conversion is provided by the Java Advanced Image (JAI) API - "The Java Advanced Imaging API provides a set of object-oriented interfaces that support a simple, high-level programming model which lets you manipulate images easily"- (http://www.oracle.com/technetwork/java/javase/tech/jai-142803.html).
-
-The heavy lifting of image format conversion is provided by the Java ImageIO API (the javax.imageio package). 
-
-"This package contains the basic classes and interfaces for describing the contents of image files, including metadata and thumbnails (IIOImage); for controlling the image reading process (ImageReader, ImageReadParam, and ImageTypeSpecifier) and image writing process (ImageWriter and ImageWriteParam); for performing transcoding between formats (ImageTranscoder), and for reporting errors (IIOException)." (http://docs.oracle.com/javase/7/docs/api/javax/imageio/package-summary.html#package_description)
+The heavy lifting of image format conversion is provided by the Java ImageIO API (the javax.imageio package): "This package contains the basic classes and interfaces for describing the contents of image files, including metadata and thumbnails (IIOImage); for controlling the image reading process (ImageReader, ImageReadParam, and ImageTypeSpecifier) and image writing process (ImageWriter and ImageWriteParam); for performing transcoding between formats (ImageTranscoder), and for reporting errors (IIOException)." (http://docs.oracle.com/javase/7/docs/api/javax/imageio/package-summary.html#package_description)
 
 In theory, it could be as simple as:
 
-    File/InputStream inFile = ...;
-    File/OutputStream outFile = ...;
+```
+File/InputStream inFile = ...;
+File/OutputStream outFile = ...;
 
-    BufferedImage image = ImageIO.read(inFile);
-    
-    if (!ImageIO.write(image, format, outFile)) {
-        // Handle image not written case
-    }
+BufferedImage image = ImageIO.read(inFile);
 
-* TIFF is not supported out of the box using Java ImageIO
+if (!ImageIO.write(image, format, outFile)) {
+    // Handle image not written case
+}
+```
 
-This is where JAI comes in. Supports many TIFF flavors, but requires native libraries installed to do so. The fall-back Java version is limitted.
+The reality looks not so simple any more
 
-* Many JPEGs can't be out of the box read using ImageIO
+* TIFF format is not supported out of the box using Java ImageIO
+* Many JPGs images can't be read using plain ImageIO
+* JAI has some extra JPG support but requires extra and/or native libraries
+* Some control is required reagarding JPEG metadata and compression options
 
-JAI has some extra support, but many JPEG images can't be read using JAI either. Requires native libraries.
-[Ok, might come back to this later]
+# 5. Setting JPEG Metadata
 
-* Also, you typically want more control over meta data and compression options
+A common requirement for writing JPEGs is setting the compression options and/or DPIs this can be done with the code snippet shown below
 
-    // TODO: More elaborate example, adapt from twelvemonkeys README.md :-)
+```
+int dpi = 300:
+float quality = 0.8f;
 
-## 5. Creating Thumbnails Efficiently
+// some code loading the image
+
+IIOMetadata metadata = jpegImageWriter.getDefaultImageMetadata(new ImageTypeSpecifier(source), null);
+ImageWriteParam writeParam = imageWriter.getDefaultWriteParam();
+
+// set the DPI in the image metadata
+Element tree = (Element) metadata.getAsTree("javax_imageio_jpeg_image_1.0");
+NodeList nodeList = tree.getElementsByTagName("app0JFIF");
+Element jfif = (Element) nodeList.item(0);
+jfif.setAttribute("Xdensity", Integer.toString(dpi));
+jfif.setAttribute("Ydensity", Integer.toString(dpi));
+jfif.setAttribute("resUnits", "1");
+metadata.setFromTree("javax_imageio_jpeg_image_1.0", tree);
+
+// set the compression to use
+writeParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+writeParam.setCompressionQuality(quality);
+
+```
+ 
+Looking at the code snippets raises a few concerns
+
+* A fair amount of knowledge is required to accomplish common tasks
+* The code is prone to NPEs when the JPEG metadata is not available
+
+
+## 6. Creating Thumbnails Efficiently
 
 Why bother with efficiency up-front when "premature optimization is the root of all evil"? But was Donald Knuth actually says - "We should forget about small efficiencies, say about 97% of the time: premature optimization is the root of all evil. Yet we should not pass up our opportunities in that critical 3%." Assuming an peak load of 45 user-uploaded images per minute and knowing the costs of adding additional server hardware it is assumed that we are in the critical 3% ballpark.
 
@@ -128,7 +154,7 @@ The CPU time needed for scaling depends mostly on the size of the source and tar
 I've never measured performance against the options you considered, but I believe the quality should be at least as good. Probably slower. Also, it comes with Servlet filters for a completely different on-the-fly scaling approach, that has been used with success on many projects, but I'm not sure if we want to go too much in-depth on that.]
 
 
-## 6. Test With Real-Life Data
+## 7. Test With Real-Life Data
 
 When the overall implementation was roughly finished a few hundred production images were used for a more thorough testing and the results were not promising - as expected. A couple of images were either not converted at all or the resulting images were severely broken.
 
@@ -140,23 +166,24 @@ A few hours later the the following problems were identified
 * Memory usage of conversion - Decompression bombs - http://www.aerasec.de/security/advisories/decompression-bomb-vulnerability.html
 * Unsupported JPEG compression formats
 
-### 6.1 Alpha-Channels
+### 7.1 Alpha-Channels
 
 The alpha channel stores transparency information and is used for the GIF and PNG image format on web pages so that images appear to have an arbitrary shape even on a non-uniform background (see http://en.wikipedia.org/wiki/Channel_(digital_image)). 
 
 Unfortunately The alpha-channel handling is broken in Java (http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6371389) as shown using one of the production images
 
-[Insert test image here]
+![Alph-Channel Before](./images/alpha-channel-before.png)
+![Alph-Channel After](./images/alpha-channel-after.png)
 
 [More stuff to come ...]
 
-### 6.2 CMYK Color 
+### 7.2 CMYK Color 
 
 The CMYK color model is a subtractive color model used in color printing whereas most user-generated image uses the RGB additive color model. When checking with operations and QA team about CMYK conversion problems it was pointed out that this problems also exists with the ImageMagick libraries being used and even more interesting - a question about CMYK color model is part of interview process for willhaben.at's support team.
 
 [Insert test image here]
 
-### 6.3 Memory Usage
+### 7.3 Memory Usage
 
 During image processing the source images is loaded and a BufferedImage is created containing the rastered and un-compressed image. In other words the memory foot-print of the BufferedImage can be 10-20 times bigger than the compressed source image which makes the operations team uneasy - a huge source image could cause excessive memory consumption which in turn can be used for a "Denial Of Service Attack". And developers hate it to be considered as the root cause for an successful DOS attack - dutifully the original image conversion source code contains the following sanit check to avoid memory problems
 
@@ -166,12 +193,20 @@ if(imageSourceFile.length() > IMAGE_FILE_SIZE_LIMIT) {
 }
 ```
 
-The memory foot-print mostly depends on the image dimension and to a lesser extent to the file size of the uploaded image when compression is used. This obserservation leads directly to notion of "decompression bomb vulnerabilities" as described at [http://www.aerasec.de/security/advisories/decompression-bomb-vulnerability.html](http://www.aerasec.de/security/advisories/decompression-bomb-vulnerability.html). A hand-crafted unicolor PNG image containing 19.000 x 19.000 pixels uses only 44 KB of disk but potentially up to 1 GB of main memory - oups.
+The memory foot-print mostly depends on the image dimension and to a lesser extent to the file size of the uploaded image when compression is used. This obserservation leads directly to notion of "decompression bomb vulnerabilities" as described at [http://www.aerasec.de/security/advisories/decompression-bomb-vulnerability.html](http://www.aerasec.de/security/advisories/decompression-bomb-vulnerability.html). A hand-crafted unicolor PNG image containing 19.000 x 19.000 pixels uses only 44 KB of disk but potentially up to 1 GB of main memory - ooups.
 
-### 6.4 Image Metadata
+In order to avoid such attacks the image metadata of the uploaded image file are retrieved - this is a fast operation which does not require to load the whole image file. But what are sensible limits regarding image size?
+
+A few examples
+
+* Nikon D610 supports up to 24 megapixel
+* Scanned A4 page with 300 DPI results in 35 megapixel (7015 x 4960)
+* Nokia Lumia 1020 provides up to 41 megapixel
+
+### 7.4 Image Metadata
 
 
-## 7. In the Need of Twelve Monkeys
+## 8. In the Need of Twelve Monkeys
 
 The Twelvemonkeys ImageIO project was created to solve many of the problems mentioned above. It was started when I was working for a web CMS (Content managment system) vendor [Escenic, but we might skip mentioning names], that created CMS solutions targeted for the media insdustry (newspapers, broadcast). It's a web-centric CMS, and 
 the initial version was created, because we/the web content management system needed support for more image formats. 
