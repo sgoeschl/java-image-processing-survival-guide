@@ -171,22 +171,76 @@ A few hours later the the following problems were identified
 
 The alpha channel stores transparency information and is used for the GIF and PNG image format on web pages so that images appear to have an arbitrary shape even on a non-uniform background (see http://en.wikipedia.org/wiki/Channel_(digital_image)). 
 
-Unfortunately The alpha-channel handling is broken in Java (http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6371389) as shown using one of the production images
+Unfortunately The alpha-channel handling is broken in Java Advanced Imaging (JAI), (http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6371389) as shown using one of the production images
 
 ![Alph-Channel Before](./images/alpha-channel-before.png)
 ![Alph-Channel After](./images/alpha-channel-after.png)
 
 [More stuff to come ...]
+[You should probably explain a little better what is the issue here. In my experience, alhpa channel in general works really well in Java, however, there have been known issues with 4 channel JPEGs and ImageIO (written as ARGB, interpreted as CMYK while read, or the other way around). The bug referred is about JAI and PNG only, it doesn't relate to the standard ImageIO PNGImageWriter.]
 
 ### 7.2 CMYK Color 
 
-The CMYK color model is a subtractive color model used in color printing whereas most user-generated image uses the RGB additive color model. When checking with operations and QA team about CMYK conversion problems it was pointed out that this problems also exists with the ImageMagick libraries being used and even more interesting - a question about CMYK color model is part of interview process for willhaben.at's support team.
+The CMYK color model is a subtractive color model used in color printing whereas most user-generated image uses the RGB additive color model. When checking with operations and QA team about CMYK conversion problems it was pointed out that these problems [which problems, exactly? :-)] also exists with the ImageMagick libraries being used and even more interesting - a question about CMYK color model is part of interview process for willhaben.at's support team.
 
 [Insert test image here]
 
+CMYK color space support is somewhat limited in Java, and there is no built-in CMYK color space, like it has for RGB. The main reason for this is that there is no standard CMYK color space.  Uunlike RGB that has standardized color profiles, like sRGB and AdobeRGB1998. 
+CMYK color profiles originates from printer manufacturers and the printed press. Manufacturers and organizations have their own standardized profiles. 
+
+Google for CMYK to RGB will come up with various mathematical formulas. Typically something like this (from http://www.rapidtables.com/convert/color/cmyk-to-rgb.htm):
+
+> The R,G,B values are given in the range of 0..255.
+> The red (R) color is calculated from the cyan (C) and black (K) colors:
+
+>  *R = 255 × (1-C) × (1-K)*
+
+> The green color (G) is calculated from the magenta (M) and black (K) colors:
+ 
+>    *G = 255 × (1-M) × (1-K)*
+
+> The blue color (B) is calculated from the yellow (Y) and black (K) colors:
+
+>    *B = 255 × (1-Y) × (1-K)*
+
+This formula "works", as in that it will produce an RGB image. But unfortunately, this rather naive implementation does not provide good results, because the color spaces have nonlinear response curves and different gamut. 
+
+So, the best way to satisfy demanding users, is to use a proper ICC color profile, and ICC color transform. This approach usually involves converting the CMYK values into a device independent color space (like Lab or CIEXyz), and then from the independent space to the destination color space (RGB). This will produce much better results. 
+
+Luckily, most image files that use CMYK color space does have an embedded ICC  profile, and when converting we shuold always use this profile. If there is no embedded ICC profile, we can look for platform specific "generic CMYK" profile. "Web coated SWOP" or similar might also do in lack of a better alternative. Only fall back to the mathematical formula above as a worst case. 
+
+To complicate things slightly in Java land: The default ImageIO JPEGImageReader will not read CMYK images. The most common workaround for now, is to read the image as raster, then convert the YCCK to CMYK, before finally converting to RGB using ICC profile and then creating a BufferedImage from the resulting raster.
+
+
+### 7.x ICC Color profiles and Color conversion
+
+As mentioned above, converting between color spaces, usually involves ICC color profiles and color transforms. Luckily for us, ICC profiles and conversion has good support in Java, although the functionality is somewhat hidden.
+
+Certain profiles creates issues in Java. 
+
+Java 8 issues, replacing old KCMS (Kodak) with Little CMS. Previous behavior can be restored for now, using special switch. 
+
+Upside: more compatible. Downside: slower. Not 100% compatible with KCMS. 
+
+Some bugs and inconsistencies between the two. 
+
+Will have to fix the library at some point. 
+
+Custom ColorSpaces will eat memory. When loading many images at once reusing is a good idea. Images may contain embedded standard profiles already loaded by the JVM. 
+
+Java ColorSpace/ICC_ColorSpace/Profile
+
+Be aware! Mutable! Use mutation operations with care. 
+
+Color conversion: 
+
+ColorConvertOp
+
+
+
 ### 7.3 Memory Usage
 
-During image processing the source images is loaded and a BufferedImage is created containing the rastered and un-compressed image. In other words the memory foot-print of the BufferedImage can be 10-20 times bigger than the compressed source image which makes the operations team uneasy - a huge source image could cause excessive memory consumption which in turn can be used for a "Denial Of Service Attack". And developers hate it to be considered as the root cause for an successful DOS attack - dutifully the original image conversion source code contains the following sanit check to avoid memory problems
+During image processing the source images is loaded and a BufferedImage is created containing the rastered and un-compressed image. In other words the memory foot-print of the BufferedImage can be 10-20 times bigger than the compressed source image which makes the operations team uneasy - a huge source image could cause excessive memory consumption which in turn can be used for a "Denial Of Service Attack". And developers hate it to be considered as the root cause for an successful DOS attack - dutifully the original image conversion source code contains the following sanity check to avoid memory problems
 
 ```
 if(imageSourceFile.length() > IMAGE_FILE_SIZE_LIMIT) {
@@ -204,8 +258,13 @@ A few examples
 * Scanned A4 page with 300 DPI results in 35 megapixel (7015 x 4960)
 * Nokia Lumia 1020 provides up to 41 megapixel
 
+[Mention something about subsamping as a workaround, as we really don't need all that resolution in a web/non-huge-image-printing context?]
+
 ### 7.4 Image Metadata
 
+The ImageIO DOM-based metadata is hard to work with.
+
+Often, this is not the metadata you want. Humans typically wants Exif or IPCT metadata, containing copyright, date, photographer etc.
 
 ## 8. In the Need of Twelve Monkeys
 
