@@ -207,36 +207,33 @@ This formula "works", as in that it will produce an RGB image. But unfortunately
 
 So, the best way to satisfy demanding users, is to use a proper ICC color profile, and ICC color transform. This approach usually involves converting the CMYK values into a device independent color space (like Lab or CIEXyz), and then from the independent space to the destination color space (RGB). This will produce much better results. 
 
-Luckily, most image files that use CMYK color space does have an embedded ICC  profile, and when converting we shuold always use this profile. If there is no embedded ICC profile, we can look for platform specific "generic CMYK" profile. "Web coated SWOP" or similar might also do in lack of a better alternative. Only fall back to the mathematical formula above as a worst case. 
+Luckily, most image files that use CMYK color space does have an embedded ICC  profile, and when converting we should always use this profile. If there is no embedded ICC profile, we can look for a platform specific "generic CMYK" profile. "Web coated SWOP" or similar might also do in lack of a better alternative. And only fall back to the mathematical formula above as a worst case. [This is the "algorithm" used by TwelveMonkeys, anyway... :-)]
 
 To complicate things slightly in Java land: The default ImageIO JPEGImageReader will not read CMYK images. The most common workaround for now, is to read the image as raster, then convert the YCCK to CMYK, before finally converting to RGB using ICC profile and then creating a BufferedImage from the resulting raster.
-
 
 ### 7.x ICC Color profiles and Color conversion
 
 As mentioned above, converting between color spaces, usually involves ICC color profiles and color transforms. Luckily for us, ICC profiles and conversion has good support in Java, although the functionality is somewhat hidden.
 
-Certain profiles creates issues in Java. 
+The Java class ColorSpace is used to represent color spaces in Java. It has a subclass, ICC_ColorSpace for color spaces based on ICC profiles, and a corresponding ICC_Profile class to represent the profile itself. 
 
-Java 8 issues, replacing old KCMS (Kodak) with Little CMS. Previous behavior can be restored for now, using special switch. 
+Color conversion between color spaces and color profiles is handled by the ColorConvertOp. On most platforms, this class delegates to native code to do the actual transformation, making it very fast and efficient. In most cases, magnitudes faster than naive conversion implemented in Java.
 
-Upside: more compatible. Downside: slower. Not 100% compatible with KCMS. 
+Unfortunately, certain profiles contains issues that causes crashes or exceptions i Java:
+[Why does loading this jpg using JavaIO give CMMException?](http://stackoverflow.com/questions/4470958/)
+[Exception “java.awt.color.CMMException: Invalid image format” thrown when resizing certain images…why?](http://stackoverflow.com/questions/12288813/)
+[CMMException when parsing jpeg](https://github.com/haraldk/TwelveMonkeys/issues/34)
+These profiles/issues must be recognized and dealt with before they are instantiated and passed to the ColorConvertOp filter. 
 
-Some bugs and inconsistencies between the two. 
+In addition, Java 8 creates some new issues, as Oracle (?) has been replacing the rather aging KCMS (developed by Kodak) with Little CMS (LCMS). The upside with the switch to LCMS though, ia a more compatible, better maintained and robust CMM system. However, the short-term downside is that current benchmarks shows it is slower, and it's not 100% compatible with KCMS [as shown by various bugs, like https://github.com/haraldk/TwelveMonkeys/issues/41]. 
 
-Will have to fix the library at some point. 
+Fortunately previous behavior can be restored for now, using a special switch:
 
-Custom ColorSpaces will eat memory. When loading many images at once reusing is a good idea. Images may contain embedded standard profiles already loaded by the JVM. 
+    -Dsun.java2d.cmm=sun.java2d.cmm.kcms.KcmsServiceProvider
 
-Java ColorSpace/ICC_ColorSpace/Profile
+It's probably a good idea to do so, until libraries and frameworks have been updated to work fully with LCMS or inconsistencies has been worked out. Will have to fix the library at some point. 
 
-Be aware! Mutable! Use mutation operations with care. 
-
-Color conversion: 
-
-ColorConvertOp
-
-
+Note that loading Custom ColorSpaces will eat memory. When loading many images at once reusing ICC profiles is a good idea. Many images contains embedded standard profiles, that will already be loaded by the JVM. But, be aware! ICC_Profile objects are mutable. It's therefore important to use these mutation operations with care, and make sure you either work on a non-shared instance or create a local copy before making changes. 
 
 ### 7.3 Memory Usage
 
