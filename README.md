@@ -325,3 +325,25 @@ Nowadays, the world is a little different, thus the goals have changed:
  
  *) Other software here, typically means libJPEG, but also Adobe Photoshop and others. 
 
+### On-the-fly conversion of images
+
+Servlet Filter based.
+Reads the image from source, writes the scaled version directly to the response stream (alternatively through a cache).
+
+Pros:
+
+- May save disk space
+- Saves up-front work that may slow down workflow
+ 
+Cons:
+
+- Needs more resources for the (first) request
+- More complicated setup (caching etc)
+
+TwelveMonkeys comes with a set of chainable filters that allows different conversions and effects to be applied to images "on-the-fly".
+
+- Resampling (scaling)
+- Cropping (create different aspects)
+- Color conversion or effects (like grayscale, vintage/lomo look etc)
+- Watermarking
+- Format conversion (any format to web format like JPEG or PNG)
