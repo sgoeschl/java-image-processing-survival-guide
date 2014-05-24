@@ -159,7 +159,7 @@ I've never measured performance against the options you considered, but I believ
 
 When the overall implementation was roughly finished a few hundred production images were used for a more thorough testing and the results were not promising - as expected. A couple of images were either not converted at all or the resulting images were severely broken.
 
-A few hours later the the following problems were identified
+A few hours later the the following problems were identified:
 
 * GIF & PNG alpha-channels
 * CMYK color space
@@ -177,6 +177,7 @@ Unfortunately The alpha-channel handling is broken in Java Advanced Imaging (JAI
 ![Alph-Channel After](./images/alpha-channel-after.png)
 
 [More stuff to come ...]
+
 [You should probably explain a little better what is the issue here. In my experience, alhpa channel in general works really well in Java, however, there have been known issues with 4 channel JPEGs and ImageIO (written as ARGB, interpreted as CMYK while read, or the other way around). The bug referred is about JAI and PNG only, it doesn't relate to the standard ImageIO PNGImageWriter.]
 
 ### 7.2 CMYK Color 
@@ -265,10 +266,11 @@ Often, this is not the metadata you want. Humans typically wants Exif or IPCT me
 
 ## 8. In the Need of Twelve Monkeys
 
-The Twelvemonkeys ImageIO project was created to solve many of the problems mentioned above. It was started when I was working for a web CMS (Content managment system) vendor [Escenic, but we might skip mentioning names], that created CMS solutions targeted for the media insdustry (newspapers, broadcast). It's a web-centric CMS, and 
+
+The Twelvemonkeys ImageIO project was created to solve many of the problems mentioned above. It was started when I was working for a web CMS (Content managment system) vendor [Escenic, but we might skip mentioning names ;-)], that created CMS solutions targeted for the media industry (newspapers, broadcast). It's a web-centric CMS, and 
 the initial version was created, because we/the web content management system needed support for more image formats. 
 
-### History
+### A little bit of History
 
 #### 1.x version
 * Java (prior to J2SE  1.4) had only limitted support for reading JPEG, PNG and GIF
@@ -346,4 +348,5 @@ TwelveMonkeys comes with a set of chainable filters that allows different conver
 - Cropping (create different aspects)
 - Color conversion or effects (like grayscale, vintage/lomo look etc)
 - Watermarking
+- Content negotiation
 - Format conversion (any format to web format like JPEG or PNG)
