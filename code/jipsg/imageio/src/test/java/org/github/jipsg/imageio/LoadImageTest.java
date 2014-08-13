@@ -4,7 +4,7 @@
  */
 package org.github.jipsg.imageio;
 
-import org.github.jipsg.AbstractImageTest;
+import org.github.jipsg.common.AbstractImageTest;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,7 +19,6 @@ public class LoadImageTest extends AbstractImageTest {
     @Before
     public void setup() {
         super.setup();
-        ;
         super.setModuleName("imageio");
     }
 
@@ -39,8 +38,8 @@ public class LoadImageTest extends AbstractImageTest {
         // Get list of all informal format names understood by the current set of registered readers
         String[] formatNames = ImageIO.getReaderFormatNames();
 
-        for (int i = 0; i < formatNames.length; i++) {
-            set.add(formatNames[i].toLowerCase());
+        for (String formatName : formatNames) {
+            set.add(formatName.toLowerCase());
         }
         System.out.println("Supported read formats: " + set);
 
@@ -49,8 +48,8 @@ public class LoadImageTest extends AbstractImageTest {
         // Get list of all informal format names understood by the current set of registered writers
         formatNames = ImageIO.getWriterFormatNames();
 
-        for (int i = 0; i < formatNames.length; i++) {
-            set.add(formatNames[i].toLowerCase());
+        for (String formatName : formatNames) {
+            set.add(formatName.toLowerCase());
         }
         System.out.println("Supported write formats: " + set);
 
@@ -59,8 +58,8 @@ public class LoadImageTest extends AbstractImageTest {
         // Get list of all MIME types understood by the current set of registered readers
         formatNames = ImageIO.getReaderMIMETypes();
 
-        for (int i = 0; i < formatNames.length; i++) {
-            set.add(formatNames[i].toLowerCase());
+        for (String formatName : formatNames) {
+            set.add(formatName.toLowerCase());
         }
         System.out.println("Supported read MIME types: " + set);
 
@@ -69,8 +68,8 @@ public class LoadImageTest extends AbstractImageTest {
         // Get list of all MIME types understood by the current set of registered writers
         formatNames = ImageIO.getWriterMIMETypes();
 
-        for (int i = 0; i < formatNames.length; i++) {
-            set.add(formatNames[i].toLowerCase());
+        for (String formatName : formatNames) {
+            set.add(formatName.toLowerCase());
         }
         System.out.println("Supported write MIME types: " + set);
     }

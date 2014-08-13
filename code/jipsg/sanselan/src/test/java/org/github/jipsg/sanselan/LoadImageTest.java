@@ -8,7 +8,7 @@ import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.Imaging;
 import org.apache.commons.imaging.ImagingConstants;
 import org.apache.commons.imaging.common.IBufferedImageFactory;
-import org.github.jipsg.AbstractImageTest;
+import org.github.jipsg.common.AbstractImageTest;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,12 +38,8 @@ public class LoadImageTest extends AbstractImageTest {
         params.put(ImagingConstants.BUFFERED_IMAGE_FACTORY,
                 new ManagedImageBufferedImageFactory());
 
-        // params.put(SanselanConstants.PARAM_KEY_VERBOSE, Boolean.TRUE);
-
         // read image
-        final BufferedImage image = Imaging.getBufferedImage(file, params);
-
-        return image;
+        return Imaging.getBufferedImage(file, params);
     }
 
     /**

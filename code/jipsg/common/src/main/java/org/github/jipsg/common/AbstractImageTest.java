@@ -1,4 +1,4 @@
-package org.github.jipsg;
+package org.github.jipsg.common;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -8,11 +8,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Created with IntelliJ IDEA.
- * User: sgoeschl
- * Date: 13/08/14
- * Time: 18:25
- * To change this template use File | Settings | File Templates.
+ * Abstract test class for image testing.
  */
 public class AbstractImageTest {
 

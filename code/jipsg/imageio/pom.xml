@@ -13,14 +13,9 @@
     <dependencies>
         <dependency>
             <groupId>org.github.jipsg</groupId>
-            <artifactId>jipsg-imageio</artifactId>
+            <artifactId>jipsg-common</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
         </dependency>
     </dependencies>
 

@@ -4,7 +4,7 @@
  */
 package org.github.jipsg.twelvemonkey;
 
-import org.github.jipsg.AbstractImageTest;
+import org.github.jipsg.common.AbstractImageTest;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,7 +29,7 @@ public class LoadImageTest extends AbstractImageTest {
     /**
      * List available image formats.
      *
-     * @see http://examples.javacodegeeks.com/desktop-java/imageio/list-read-write-supported-image-formats/
+     * see http://examples.javacodegeeks.com/desktop-java/imageio/list-read-write-supported-image-formats/
      */
     @Test
     public void testListSupportedImageFormats() throws Exception {

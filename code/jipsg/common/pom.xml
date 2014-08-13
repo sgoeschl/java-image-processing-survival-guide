@@ -4,19 +4,18 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.github.jipsg</groupId>
-    <artifactId>jipsg</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>jipsg-common</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>jipsg</name>
+    <name>jipsg-common</name>
     <inceptionYear>2014</inceptionYear>
-    <description>Java Image Processing Survival Guide JAI</description>
+    <description>Java Image Processing Survival Guide ImageIO</description>
 
-    <modules>
-        <module>common</module>
-        <module>imageio</module>
-        <module>jai</module>
-        <module>sanselan</module>
-        <module>twelvemonkey</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+        </dependency>
+    </dependencies>
 
 </project>

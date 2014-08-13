@@ -4,7 +4,7 @@
  */
 package org.github.jipsg.jai;
 
-import org.github.jipsg.AbstractImageTest;
+import org.github.jipsg.common.AbstractImageTest;
 import org.junit.Before;
 import org.junit.Test;
 
