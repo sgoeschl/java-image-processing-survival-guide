@@ -7,6 +7,11 @@ package org.github.jipsg.sanselan;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Load various images using Apache Commons Imaging.
  */
@@ -27,6 +32,32 @@ public class LoadImageSanselanTest extends AbstractSanselanTest {
 
     }
 
+    // ======================================================================
+    // Load various image formats
+    // ======================================================================
+
+    @Test
+    public void testLoadVariousImageFormats() throws Exception {
+
+        List<File> sourceImageFileList = new ArrayList<File>();
+
+        // fails with org.apache.commons.imaging.ImageReadException: Invalid marker found in entropy data
+        // sourceImageFileList.add(getImageFile("jpg", "marble.jpg"));
+
+        sourceImageFileList.add(getImageFile("png", "marble.png"));
+        sourceImageFileList.add(getImageFile("tiff", "marble.tiff"));
+        sourceImageFileList.add(getImageFile("gif", "marble.gif"));
+
+        for(File sourceImageFile : sourceImageFileList) {
+            BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
+            assertValidBufferedImage(bufferedImage);
+        }
+    }
+
+    // ======================================================================
+    // JPG
+    // ======================================================================
+
     /**
      * Plain-vanilla JPEG
      */
@@ -34,10 +65,6 @@ public class LoadImageSanselanTest extends AbstractSanselanTest {
     public void testLoadJPEGImage() throws Exception {
         assertValidBufferedImage(createBufferedImage(getImageFile("jpg", "test-image-rgb-01.jpg")));
     }
-
-    // ======================================================================
-    // General
-    // ======================================================================
 
     /**
      * CMYK color model is supported.
@@ -48,7 +75,7 @@ public class LoadImageSanselanTest extends AbstractSanselanTest {
     }
 
     // ======================================================================
-    // JPEG
+    // TIFF
     // ======================================================================
 
     /**
@@ -69,10 +96,6 @@ public class LoadImageSanselanTest extends AbstractSanselanTest {
     public void testLoadTiffWithCompression3() throws Exception {
         assertValidBufferedImage(createBufferedImage(getImageFile("tiff", "test-single-gray-compression-type-3.tiff")));
     }
-
-    // ======================================================================
-    // TIFF
-    // ======================================================================
 
     /**
      * Load a TIFF image with compression 4.

@@ -9,7 +9,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -72,6 +76,26 @@ public class ImageLoadJaiTest extends AbstractJaiTest {
             set.add(formatNames[i].toLowerCase());
         }
         System.out.println("Supported write MIME types: " + set);
+    }
+
+    // ======================================================================
+    // Load various image formats
+    // ======================================================================
+
+    @Test
+    public void testLoadVariousImageFormats() throws Exception {
+
+        List<File> sourceImageFileList = new ArrayList<File>();
+
+        sourceImageFileList.add(getImageFile("jpg", "marble.jpg"));
+        sourceImageFileList.add(getImageFile("png", "marble.png"));
+        sourceImageFileList.add(getImageFile("tiff", "marble.tiff"));
+        sourceImageFileList.add(getImageFile("gif", "marble.gif"));
+
+        for(File sourceImageFile : sourceImageFileList) {
+            BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
+            assertValidBufferedImage(bufferedImage);
+        }
     }
 
     // ======================================================================

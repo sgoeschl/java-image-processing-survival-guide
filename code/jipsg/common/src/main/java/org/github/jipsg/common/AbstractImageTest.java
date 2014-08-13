@@ -54,18 +54,18 @@ public abstract class AbstractImageTest {
         assertTrue(bufferedImage.getWidth() > 0);
     }
 
-    public File createOutputFileName(File file, String format) {
-        return createOutputFileName(file.getName(), format);
+    public File createOutputFileName(String directory, File file, String format) {
+        return createOutputFileName(directory, file.getName(), format);
     }
 
-    public File createOutputFileName(String name, String format) {
+    public File createOutputFileName(String directory, String fileName, String format) {
 
-        File outputDir = new File(new File(new File("./target"), "out"), this.moduleName);
+        File outputDir = new File(new File(new File(new File("./target"), "out"), directory), this.moduleName);
 
         if(!outputDir.exists()) {
             outputDir.mkdirs();
         }
 
-        return new File(outputDir, name + "." + format);
+        return new File(outputDir, fileName + "." + format);
     }
 }

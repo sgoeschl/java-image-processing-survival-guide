@@ -4,6 +4,7 @@
  */
 package org.github.jipsg.sanselan;
 
+import org.github.jipsg.common.image.BufferedImageOperations;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,13 +29,14 @@ public class ImageConversionSanselanTest extends AbstractSanselanTest {
     // ======================================================================
 
     @Test
-    public void testImageWriteAsJpeg() throws Exception {
+    public void testWriteImageFormatsAsJpeg() throws Exception {
 
         String formatName = "jpeg";
         List<File> sourceImageFileList = new ArrayList<File>();
 
         // fails with org.apache.commons.imaging.ImageReadException: Invalid marker found in entropy data
         // sourceImageFileList.add(getImageFile("jpg", "marble.jpg"));
+
         sourceImageFileList.add(getImageFile("png", "marble.png"));
         sourceImageFileList.add(getImageFile("tiff", "marble.tiff"));
         sourceImageFileList.add(getImageFile("gif", "marble.gif"));
@@ -42,13 +44,13 @@ public class ImageConversionSanselanTest extends AbstractSanselanTest {
         for(File sourceImageFile : sourceImageFileList) {
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
             assertValidBufferedImage(bufferedImage);
-            File targetImageFile = createOutputFileName(sourceImageFile, formatName);
+            File targetImageFile = createOutputFileName("testWriteImageFormatsAsJpeg", sourceImageFile, formatName);
             ImageIO.write(bufferedImage, formatName, targetImageFile);
         }
     }
 
     @Test
-    public void testImageWriteAsPng() throws Exception {
+    public void testWriteImageFormatsAsPng() throws Exception {
 
         String formatName = "png";
         List<File> sourceImageFileList = new ArrayList<File>();
@@ -62,8 +64,56 @@ public class ImageConversionSanselanTest extends AbstractSanselanTest {
         for(File sourceImageFile : sourceImageFileList) {
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
             assertValidBufferedImage(bufferedImage);
-            File targetImageFile = createOutputFileName(sourceImageFile, formatName);
+            File targetImageFile = createOutputFileName("testWriteImageFormatsAsPng", sourceImageFile, formatName);
             ImageIO.write(bufferedImage, formatName, targetImageFile);
+        }
+    }
+
+    // ======================================================================
+    // Transparent Images
+    // ======================================================================
+
+    /**
+     * Convert images having a transparency layer (alpha-channel) to JPG. Without
+     * further handling the alpha-channel will be rendered black.
+     * The test fails with "org.apache.commons.imaging.ImageWriteException: This image format (Jpeg-Custom) cannot be written."
+     */
+    @Test(expected = org.apache.commons.imaging.ImageWriteException.class)
+    public void testWriteTransparentImagesAsJpeg() throws Exception {
+
+        String formatName = "jpeg";
+        List<File> sourceImageFileList = new ArrayList<File>();
+
+        sourceImageFileList.add(getImageFile("gif", "test-image-transparent.gif"));
+        sourceImageFileList.add(getImageFile("png", "test-image-transparent.png"));
+
+        for(File sourceImageFile : sourceImageFileList) {
+            BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
+            assertValidBufferedImage(bufferedImage);
+            File targetImageFile = createOutputFileName("testWriteTransparentImagesAsJpeg", sourceImageFile, formatName);
+            writeBufferedImage(bufferedImage, formatName, targetImageFile);
+        }
+    }
+
+    /**
+     * Convert images having a transparency layer (alpha-channel) to JPG. Fill
+     * the alpha-channel with Color.WHITE to have a useful image.
+     * The test fails with "org.apache.commons.imaging.ImageWriteException: This image format (Jpeg-Custom) cannot be written."
+     */
+    @Test(expected = org.apache.commons.imaging.ImageWriteException.class)
+    public void testWriteTransparentImagesWithAlphaChannelHandlingAsJpeg() throws Exception {
+
+        String formatName = "jpeg";
+        List<File> sourceImageFileList = new ArrayList<File>();
+
+        sourceImageFileList.add(getImageFile("gif", "test-image-transparent.gif"));
+        sourceImageFileList.add(getImageFile("png", "test-image-transparent.png"));
+
+        for(File sourceImageFile : sourceImageFileList) {
+            BufferedImage bufferedImage = BufferedImageOperations.fillTransparentPixel(createBufferedImage(sourceImageFile));
+            assertValidBufferedImage(bufferedImage);
+            File targetImageFile = createOutputFileName("testWriteTransparentImagesWithAlphaChannelHandlingAsJpeg", sourceImageFile, formatName);
+            writeBufferedImage(bufferedImage, formatName, targetImageFile);
         }
     }
 }

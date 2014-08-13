@@ -46,7 +46,7 @@ public class AbstractSanselanTest extends AbstractImageTest {
         if("jpg".equalsIgnoreCase(formatName)) {
             return ImageFormats.JPEG;
         }
-        else if("jepg".equalsIgnoreCase(formatName)) {
+        else if("jpeg".equalsIgnoreCase(formatName)) {
             return ImageFormats.JPEG;
         }
         else if("png".equalsIgnoreCase(formatName)) {
