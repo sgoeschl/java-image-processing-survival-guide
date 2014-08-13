@@ -43,7 +43,6 @@ public class LoadImageSanselanTest extends AbstractSanselanTest {
 
         // fails with org.apache.commons.imaging.ImageReadException: Invalid marker found in entropy data
         // sourceImageFileList.add(getImageFile("jpg", "marble.jpg"));
-
         sourceImageFileList.add(getImageFile("png", "marble.png"));
         sourceImageFileList.add(getImageFile("tiff", "marble.tiff"));
         sourceImageFileList.add(getImageFile("gif", "marble.gif"));

@@ -19,8 +19,8 @@ public class AbstractJaiTest extends AbstractImageTest {
 
     @Override
     public void setup() {
-        super.setup();
         super.setModuleName("jai");
+        super.setup();
     }
 
     @Override

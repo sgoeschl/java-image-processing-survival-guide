@@ -20,7 +20,13 @@ public abstract class AbstractImageTest {
     public abstract BufferedImage resample(final BufferedImage bufferedImage, int width, int height);
 
     public void setup() {
-        this.imageDirectory = new File("../../images");
+        File currDirectory = new File("");
+        if(currDirectory.getAbsolutePath().endsWith("jipsg")) {
+            this.imageDirectory = new File("../images");
+        }
+        else {
+            this.imageDirectory = new File("../../images");
+        }
     }
 
     private File getImageDirectory() {

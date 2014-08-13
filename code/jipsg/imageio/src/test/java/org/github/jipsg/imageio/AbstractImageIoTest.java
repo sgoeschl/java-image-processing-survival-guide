@@ -18,8 +18,8 @@ public class AbstractImageIoTest extends AbstractImageTest {
 
     @Override
     public void setup() {
-        super.setup();
         super.setModuleName("imageio");
+        super.setup();
     }
 
     @Override

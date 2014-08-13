@@ -17,8 +17,8 @@ public class AbstractTwelveMonkeyTest extends AbstractImageTest {
 
     @Override
     public void setup() {
-        super.setup();
         super.setModuleName("twelvemonkey");
+        super.setup();
     }
 
     @Override

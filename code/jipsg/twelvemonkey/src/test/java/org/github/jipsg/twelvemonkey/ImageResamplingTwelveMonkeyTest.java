@@ -41,7 +41,7 @@ public class ImageResamplingTwelveMonkeyTest extends AbstractTwelveMonkeyTest {
         for(File sourceImageFile : sourceImageFileList) {
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
             assertValidBufferedImage(bufferedImage);
-            BufferedImage resampledBufferdImage = resample(bufferedImage, 640, 640);
+            BufferedImage resampledBufferdImage = resample(bufferedImage, 640, 480);
             assertValidBufferedImage(resampledBufferdImage);
             File targetImageFile = createOutputFileName("testResamplingImagesAsJpeg", sourceImageFile, formatName);
             writeBufferedImage(resampledBufferdImage, formatName, targetImageFile);

@@ -25,8 +25,8 @@ public class AbstractSanselanTest extends AbstractImageTest {
 
     @Override
     public void setup() {
-        super.setup();
         super.setModuleName("sanselan");
+        super.setup();
     }
 
     @Override
