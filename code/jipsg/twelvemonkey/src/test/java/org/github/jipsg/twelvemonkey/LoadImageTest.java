@@ -4,50 +4,31 @@
  */
 package org.github.jipsg.twelvemonkey;
 
+import org.github.jipsg.AbstractImageTest;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * Load various images.
  */
-public class LoadImageTest
-{
-    private File imageDirectory;
-
+public class LoadImageTest extends AbstractImageTest {
     @Before
     public void setup() {
-        this.imageDirectory = new File("../../images");
+        super.setup();
+        super.setModuleName("twelvemonkey");
     }
 
-    public File getImageDirectory() {
-        return imageDirectory;
-    }
-
-    public File getImageFile(String folderName, String fileName) throws IOException {
-        File folderFile = new File(getImageDirectory(), folderName);
-        File result = new File(folderFile, fileName);
-        if(!result.exists() || !result.canRead()) {
-            throw new IOException("Can't open/read the following file : " + result.getAbsolutePath());
-        }
-        return result;
-    }
-
-    public void assertValidBufferedImage(BufferedImage bufferedImage) {
-        assertNotNull("bufferedImage is null", bufferedImage);
-        assertTrue(bufferedImage.getHeight() > 0);
-        assertTrue(bufferedImage.getWidth() > 0);
-    }
+    // ======================================================================
+    // General
+    // ======================================================================
 
     /**
      * List available image formats.
+     *
      * @see http://examples.javacodegeeks.com/desktop-java/imageio/list-read-write-supported-image-formats/
      */
     @Test
@@ -95,15 +76,14 @@ public class LoadImageTest
     }
 
     // ======================================================================
-    // JPG
+    // JPEG
     // ======================================================================
 
     /**
      * Plain-vanilla JPEG
      */
     @Test
-    public void testLoadJPEGImage() throws Exception
-    {
+    public void testLoadJPEGImage() throws Exception {
         assertValidBufferedImage(ImageIO.read(getImageFile("jpg", "test-image-rgb-01.jpg")));
     }
 
@@ -111,8 +91,7 @@ public class LoadImageTest
      * CMYK color model is supported.
      */
     @Test
-    public void testLoadCMYKImage() throws Exception
-    {
+    public void testLoadCMYKImage() throws Exception {
         assertValidBufferedImage(ImageIO.read(getImageFile("jpg", "test-image-cmyk-uncompressed.jpg")));
     }
 
@@ -126,8 +105,7 @@ public class LoadImageTest
      * an "ArrayIndexOutOfBoundsException"
      */
     @Test(expected = java.lang.ArrayIndexOutOfBoundsException.class)
-    public void testLoadTiffGrayWithCompression2() throws Exception
-    {
+    public void testLoadTiffGrayWithCompression2() throws Exception {
         assertValidBufferedImage(ImageIO.read(getImageFile("tiff", "test-single-gray-compression-type-2.tiff")));
     }
 
@@ -136,8 +114,7 @@ public class LoadImageTest
      * Expecting a "javax.imageio.IIOException: Unsupported TIFF Compression value: 3"
      */
     @Test(expected = javax.imageio.IIOException.class)
-    public void testLoadTiffWithCompression3() throws Exception
-    {
+    public void testLoadTiffWithCompression3() throws Exception {
         assertValidBufferedImage(ImageIO.read(getImageFile("tiff", "test-single-gray-compression-type-3.tiff")));
     }
 
@@ -146,8 +123,7 @@ public class LoadImageTest
      * Expecting a "javax.imageio.IIOException: Unsupported TIFF Compression value: 4"
      */
     @Test(expected = javax.imageio.IIOException.class)
-    public void testLoadTiffWithCompression4() throws Exception
-    {
+    public void testLoadTiffWithCompression4() throws Exception {
         assertValidBufferedImage(ImageIO.read(getImageFile("tiff", "test-single-gray-compression-type-4.tiff")));
     }
 
@@ -156,8 +132,7 @@ public class LoadImageTest
      * Expecting a "javax.imageio.IIOException: Unsupported TIFF Compression value: 4"
      */
     @Test(expected = javax.imageio.IIOException.class)
-    public void testLoadTiffMultiPageGray() throws Exception
-    {
+    public void testLoadTiffMultiPageGray() throws Exception {
         assertValidBufferedImage(ImageIO.read(getImageFile("tiff", "test-multi-gray-compression-type-4.tiff")));
     }
 
@@ -165,8 +140,7 @@ public class LoadImageTest
      * Load a TIFF image with compression LZW.
      */
     @Test
-    public void testLoadTiffSingleCmykCompressionLzw() throws Exception
-    {
+    public void testLoadTiffSingleCmykCompressionLzw() throws Exception {
         assertValidBufferedImage(ImageIO.read(getImageFile("tiff", "test-single-cmyk-compression-lzw.tiff")));
     }
 }

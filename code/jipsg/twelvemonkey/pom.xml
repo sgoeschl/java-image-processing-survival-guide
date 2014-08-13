@@ -47,6 +47,12 @@
             <version>3.0.20140131</version>
         </dependency>
         <dependency>
+            <groupId>org.github.jipsg</groupId>
+            <artifactId>jipsg-imageio</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.11</version>
