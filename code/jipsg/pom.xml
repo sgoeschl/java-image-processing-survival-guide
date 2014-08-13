@@ -14,6 +14,7 @@
     <modules>
         <module>imageio</module>
         <module>jai</module>
+        <module>sanselan</module>
         <module>twelvemonkey</module>
     </modules>
 
