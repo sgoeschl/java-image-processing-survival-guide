@@ -11,14 +11,18 @@ package org.github.jipsg.common.image;
 import org.github.jipsg.common.image.ops.AlphaChannelImageOp;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
+import java.io.IOException;
 import java.util.Collection;
 
 /**
  * Contains ready-to use image operations without additional dependencies.
  */
 public class BufferedImageOperations {
+
     public static BufferedImage fillTransparentPixel(BufferedImage src) {
 
         // Since JDK 5 the JPG conversion messes up images with alpha-channels

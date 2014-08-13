@@ -111,7 +111,7 @@ public class ImageLoadJaiTest extends AbstractJaiTest {
     }
 
     /**
-     * CMYK color model is supported.
+     * CMYK color model is not supported.
      */
     @Test(expected = javax.imageio.IIOException.class)
     public void testLoadCMYKImage() throws Exception {

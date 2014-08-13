@@ -15,8 +15,9 @@ public abstract class AbstractImageTest {
     private String moduleName;
     private File imageDirectory;
 
-    public abstract BufferedImage createBufferedImage(File file) throws Exception;
+    public abstract BufferedImage createBufferedImage(final File file) throws Exception;
     public abstract void writeBufferedImage(final BufferedImage bufferedImage, final String formatName, final File file) throws Exception;
+    public abstract BufferedImage resample(final BufferedImage bufferedImage, int width, int height);
 
     public void setup() {
         this.imageDirectory = new File("../../images");
