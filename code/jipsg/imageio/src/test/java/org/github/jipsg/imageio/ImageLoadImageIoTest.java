@@ -2,9 +2,8 @@
  * Copyright 2003-2014, IT20one GmbH, Vienna, Austria
  * All rights reserved.
  */
-package org.github.jipsg.jai;
+package org.github.jipsg.imageio;
 
-import org.github.jipsg.common.AbstractImageTest;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -15,11 +14,12 @@ import java.util.Set;
 /**
  * Load various images.
  */
-public class LoadImageTest extends AbstractImageTest {
+public class ImageLoadImageIoTest extends AbstractImageIoTest {
+
     @Before
     public void setup() {
         super.setup();
-        this.setModuleName("jai");
+        super.setModuleName("imageio");
     }
 
     // ======================================================================
@@ -28,7 +28,7 @@ public class LoadImageTest extends AbstractImageTest {
 
     /**
      * List available image formats.
-     * see http://examples.javacodegeeks.com/desktop-java/imageio/list-read-write-supported-image-formats/
+     * see http://examples.javacodegeeks.com/desktop-java/jai/list-read-write-supported-image-formats/
      */
     @Test
     public void testListSupportedImageFormats() throws Exception {
@@ -38,8 +38,8 @@ public class LoadImageTest extends AbstractImageTest {
         // Get list of all informal format names understood by the current set of registered readers
         String[] formatNames = ImageIO.getReaderFormatNames();
 
-        for (int i = 0; i < formatNames.length; i++) {
-            set.add(formatNames[i].toLowerCase());
+        for (String formatName : formatNames) {
+            set.add(formatName.toLowerCase());
         }
         System.out.println("Supported read formats: " + set);
 
@@ -48,8 +48,8 @@ public class LoadImageTest extends AbstractImageTest {
         // Get list of all informal format names understood by the current set of registered writers
         formatNames = ImageIO.getWriterFormatNames();
 
-        for (int i = 0; i < formatNames.length; i++) {
-            set.add(formatNames[i].toLowerCase());
+        for (String formatName : formatNames) {
+            set.add(formatName.toLowerCase());
         }
         System.out.println("Supported write formats: " + set);
 
@@ -58,8 +58,8 @@ public class LoadImageTest extends AbstractImageTest {
         // Get list of all MIME types understood by the current set of registered readers
         formatNames = ImageIO.getReaderMIMETypes();
 
-        for (int i = 0; i < formatNames.length; i++) {
-            set.add(formatNames[i].toLowerCase());
+        for (String formatName : formatNames) {
+            set.add(formatName.toLowerCase());
         }
         System.out.println("Supported read MIME types: " + set);
 
@@ -68,8 +68,8 @@ public class LoadImageTest extends AbstractImageTest {
         // Get list of all MIME types understood by the current set of registered writers
         formatNames = ImageIO.getWriterMIMETypes();
 
-        for (int i = 0; i < formatNames.length; i++) {
-            set.add(formatNames[i].toLowerCase());
+        for (String formatName : formatNames) {
+            set.add(formatName.toLowerCase());
         }
         System.out.println("Supported write MIME types: " + set);
     }
@@ -83,7 +83,7 @@ public class LoadImageTest extends AbstractImageTest {
      */
     @Test
     public void testLoadJPEGImage() throws Exception {
-        assertValidBufferedImage(ImageIO.read(getImageFile("jpg", "test-image-rgb-01.jpg")));
+        assertValidBufferedImage(createBufferedImage(getImageFile("jpg", "test-image-rgb-01.jpg")));
     }
 
     /**
@@ -91,7 +91,7 @@ public class LoadImageTest extends AbstractImageTest {
      */
     @Test(expected = javax.imageio.IIOException.class)
     public void testLoadCMYKImage() throws Exception {
-        assertValidBufferedImage(ImageIO.read(getImageFile("jpg", "test-image-cmyk-uncompressed.jpg")));
+        assertValidBufferedImage(createBufferedImage(getImageFile("jpg", "test-image-cmyk-uncompressed.jpg")));
     }
 
     // ======================================================================
@@ -103,43 +103,43 @@ public class LoadImageTest extends AbstractImageTest {
      * Expecting a "javax.imageio.IIOException: Unsupported TIFF Compression value: 2" but got
      * an "ArrayIndexOutOfBoundsException"
      */
-    @Test
+    @Test(expected = java.lang.AssertionError.class)
     public void testLoadTiffGrayWithCompression2() throws Exception {
-        assertValidBufferedImage(ImageIO.read(getImageFile("tiff", "test-single-gray-compression-type-2.tiff")));
+        assertValidBufferedImage(createBufferedImage(getImageFile("tiff", "test-single-gray-compression-type-2.tiff")));
     }
 
     /**
      * Load a TIFF image with compression 3.
      * Expecting a "javax.imageio.IIOException: Unsupported TIFF Compression value: 3"
      */
-    @Test
+    @Test(expected = java.lang.AssertionError.class)
     public void testLoadTiffWithCompression3() throws Exception {
-        assertValidBufferedImage(ImageIO.read(getImageFile("tiff", "test-single-gray-compression-type-3.tiff")));
+        assertValidBufferedImage(createBufferedImage(getImageFile("tiff", "test-single-gray-compression-type-3.tiff")));
     }
 
     /**
      * Load a TIFF image with compression 4.
      * Expecting a "javax.imageio.IIOException: Unsupported TIFF Compression value: 4"
      */
-    @Test
+    @Test(expected = java.lang.AssertionError.class)
     public void testLoadTiffWithCompression4() throws Exception {
-        assertValidBufferedImage(ImageIO.read(getImageFile("tiff", "test-single-gray-compression-type-4.tiff")));
+        assertValidBufferedImage(createBufferedImage(getImageFile("tiff", "test-single-gray-compression-type-4.tiff")));
     }
 
     /**
      * Load a TIFF image with compression 4.
      * Expecting a "javax.imageio.IIOException: Unsupported TIFF Compression value: 4"
      */
-    @Test
+    @Test(expected = java.lang.AssertionError.class)
     public void testLoadTiffMultiPageGray() throws Exception {
-        assertValidBufferedImage(ImageIO.read(getImageFile("tiff", "test-multi-gray-compression-type-4.tiff")));
+        assertValidBufferedImage(createBufferedImage(getImageFile("tiff", "test-multi-gray-compression-type-4.tiff")));
     }
 
     /**
      * Load a TIFF image with compression LZW.
      */
-    @Test
+    @Test(expected = java.lang.AssertionError.class)
     public void testLoadTiffSingleCmykCompressionLzw() throws Exception {
-        assertValidBufferedImage(ImageIO.read(getImageFile("tiff", "test-single-cmyk-compression-lzw.tiff")));
+        assertValidBufferedImage(createBufferedImage(getImageFile("tiff", "test-single-cmyk-compression-lzw.tiff")));
     }
 }

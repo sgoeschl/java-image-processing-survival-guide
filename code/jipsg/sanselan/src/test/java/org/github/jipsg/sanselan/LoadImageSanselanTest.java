@@ -4,42 +4,17 @@
  */
 package org.github.jipsg.sanselan;
 
-import org.apache.commons.imaging.ImageReadException;
-import org.apache.commons.imaging.Imaging;
-import org.apache.commons.imaging.ImagingConstants;
-import org.apache.commons.imaging.common.IBufferedImageFactory;
-import org.github.jipsg.common.AbstractImageTest;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Load various images using Apache Commons Imaging.
  */
-public class LoadImageTest extends AbstractImageTest {
+public class LoadImageSanselanTest extends AbstractSanselanTest {
 
     @Before
     public void setup() {
         super.setup();
-        super.setModuleName("sanselan");
-    }
-
-    private BufferedImage read(final File file)
-            throws ImageReadException, IOException {
-        final Map<String, Object> params = new HashMap<String, Object>();
-
-        // set optional parameters if you like
-        params.put(ImagingConstants.BUFFERED_IMAGE_FACTORY,
-                new ManagedImageBufferedImageFactory());
-
-        // read image
-        return Imaging.getBufferedImage(file, params);
     }
 
     /**
@@ -57,7 +32,7 @@ public class LoadImageTest extends AbstractImageTest {
      */
     @Test(expected = org.apache.commons.imaging.ImageReadException.class)
     public void testLoadJPEGImage() throws Exception {
-        assertValidBufferedImage(read(getImageFile("jpg", "test-image-rgb-01.jpg")));
+        assertValidBufferedImage(createBufferedImage(getImageFile("jpg", "test-image-rgb-01.jpg")));
     }
 
     // ======================================================================
@@ -69,7 +44,7 @@ public class LoadImageTest extends AbstractImageTest {
      */
     @Test(expected = org.apache.commons.imaging.ImageReadException.class)
     public void testLoadCMYKImage() throws Exception {
-        assertValidBufferedImage(read(getImageFile("jpg", "test-image-cmyk-uncompressed.jpg")));
+        assertValidBufferedImage(createBufferedImage(getImageFile("jpg", "test-image-cmyk-uncompressed.jpg")));
     }
 
     // ======================================================================
@@ -83,7 +58,7 @@ public class LoadImageTest extends AbstractImageTest {
      */
     @Test
     public void testLoadTiffGrayWithCompression2() throws Exception {
-        assertValidBufferedImage(read(getImageFile("tiff", "test-single-gray-compression-type-2.tiff")));
+        assertValidBufferedImage(createBufferedImage(getImageFile("tiff", "test-single-gray-compression-type-2.tiff")));
     }
 
     /**
@@ -92,7 +67,7 @@ public class LoadImageTest extends AbstractImageTest {
      */
     @Test
     public void testLoadTiffWithCompression3() throws Exception {
-        assertValidBufferedImage(read(getImageFile("tiff", "test-single-gray-compression-type-3.tiff")));
+        assertValidBufferedImage(createBufferedImage(getImageFile("tiff", "test-single-gray-compression-type-3.tiff")));
     }
 
     // ======================================================================
@@ -105,7 +80,7 @@ public class LoadImageTest extends AbstractImageTest {
      */
     @Test
     public void testLoadTiffWithCompression4() throws Exception {
-        assertValidBufferedImage(read(getImageFile("tiff", "test-single-gray-compression-type-4.tiff")));
+        assertValidBufferedImage(createBufferedImage(getImageFile("tiff", "test-single-gray-compression-type-4.tiff")));
     }
 
     /**
@@ -114,7 +89,7 @@ public class LoadImageTest extends AbstractImageTest {
      */
     @Test
     public void testLoadTiffMultiPageGray() throws Exception {
-        assertValidBufferedImage(read(getImageFile("tiff", "test-multi-gray-compression-type-4.tiff")));
+        assertValidBufferedImage(createBufferedImage(getImageFile("tiff", "test-multi-gray-compression-type-4.tiff")));
     }
 
     /**
@@ -122,25 +97,6 @@ public class LoadImageTest extends AbstractImageTest {
      */
     @Test
     public void testLoadTiffSingleCmykCompressionLzw() throws Exception {
-        assertValidBufferedImage(read(getImageFile("tiff", "test-single-cmyk-compression-lzw.tiff")));
-    }
-
-    private static class ManagedImageBufferedImageFactory implements
-            IBufferedImageFactory {
-
-        public BufferedImage getColorBufferedImage(final int width, final int height,
-                                                   final boolean hasAlpha) {
-            final GraphicsEnvironment ge = GraphicsEnvironment
-                    .getLocalGraphicsEnvironment();
-            final GraphicsDevice gd = ge.getDefaultScreenDevice();
-            final GraphicsConfiguration gc = gd.getDefaultConfiguration();
-            return gc.createCompatibleImage(width, height,
-                    Transparency.TRANSLUCENT);
-        }
-
-        public BufferedImage getGrayscaleBufferedImage(final int width, final int height,
-                                                       final boolean hasAlpha) {
-            return getColorBufferedImage(width, height, hasAlpha);
-        }
+        assertValidBufferedImage(createBufferedImage(getImageFile("tiff", "test-single-cmyk-compression-lzw.tiff")));
     }
 }
