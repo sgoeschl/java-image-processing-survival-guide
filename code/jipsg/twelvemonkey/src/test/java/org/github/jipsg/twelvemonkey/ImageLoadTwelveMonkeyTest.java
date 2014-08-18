@@ -17,6 +17,7 @@
 package org.github.jipsg.twelvemonkey;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.imageio.ImageIO;
@@ -136,37 +137,40 @@ public class ImageLoadTwelveMonkeyTest extends AbstractTwelveMonkeyTest {
 
     /**
      * Load a TIFF image with compression 2.
-     * Expecting a "javax.imageio.IIOException: Unsupported TIFF Compression value: 2" but got
-     * an "ArrayIndexOutOfBoundsException"
+     * Fails with  "ArrayIndexOutOfBoundsException"
      */
-    @Test(expected = java.lang.ArrayIndexOutOfBoundsException.class)
+    @Test
+    @Ignore
     public void testLoadTiffGrayWithCompression2() throws Exception {
         assertValidBufferedImage(createBufferedImage(getImageFile("tiff", "test-single-gray-compression-type-2.tiff")));
     }
 
     /**
      * Load a TIFF image with compression 3.
-     * Expecting a "javax.imageio.IIOException: Unsupported TIFF Compression value: 3"
+     * Fails with "javax.imageio.IIOException: Unsupported TIFF Compression value: 3"
      */
-    @Test(expected = javax.imageio.IIOException.class)
+    @Test
+    @Ignore
     public void testLoadTiffWithCompression3() throws Exception {
         assertValidBufferedImage(createBufferedImage(getImageFile("tiff", "test-single-gray-compression-type-3.tiff")));
     }
 
     /**
      * Load a TIFF image with compression 4.
-     * Expecting a "javax.imageio.IIOException: Unsupported TIFF Compression value: 4"
+     * Fails with "javax.imageio.IIOException: Unsupported TIFF Compression value: 4"
      */
-    @Test(expected = javax.imageio.IIOException.class)
+    @Test
+    @Ignore
     public void testLoadTiffWithCompression4() throws Exception {
         assertValidBufferedImage(createBufferedImage(getImageFile("tiff", "test-single-gray-compression-type-4.tiff")));
     }
 
     /**
-     * Load a TIFF image with compression 4.
-     * Expecting a "javax.imageio.IIOException: Unsupported TIFF Compression value: 4"
+     * Load a multi-page TIFF.
+     * Fails with a "javax.imageio.IIOException: Unsupported TIFF Compression value: 4"
      */
-    @Test(expected = javax.imageio.IIOException.class)
+    @Test
+    @Ignore
     public void testLoadTiffMultiPageGray() throws Exception {
         assertValidBufferedImage(createBufferedImage(getImageFile("tiff", "test-multi-gray-compression-type-4.tiff")));
     }

@@ -52,16 +52,7 @@ public class ImageOptimizationTest extends AbstractImageIoTest {
         String formatName = "jpeg";
         List<File> sourceImageFileList = new ArrayList<File>();
 
-        sourceImageFileList.add(getImageFile("samples", "9---9-129-277-59_-1503403285_unoptimized.jpg"));
-        sourceImageFileList.add(getImageFile("samples", "9---9-142-612-29_172746330_unoptimized.jpg"));
-        sourceImageFileList.add(getImageFile("samples", "9---9-148-647-99_-523509738_unoptimized.jpg"));
-        sourceImageFileList.add(getImageFile("samples", "9---9-148-647-99_-1537808753_unoptimized.jpg"));
-        sourceImageFileList.add(getImageFile("samples", "9---9-148-647-99_-1782909993_unoptimized.jpg"));
-        sourceImageFileList.add(getImageFile("samples", "9---9-153-646-89_80866347_unoptimized.jpg"));
-        sourceImageFileList.add(getImageFile("samples", "9---9-166-232-49_-1979589591_unoptimized.jpg"));
-        sourceImageFileList.add(getImageFile("samples", "9---9-166-232-49_-1979589591_unoptimized.jpg"));
-        sourceImageFileList.add(getImageFile("samples", "9---9-172-398-39_-224990676_unoptimized.jpg"));
-        sourceImageFileList.add(getImageFile("samples", "9---172-955-59_2023019913_unoptimized.jpg"));
+        sourceImageFileList.add(getImageFile("samples", "under-exposed-black-white-image.jpg"));
 
         for(File sourceImageFile : sourceImageFileList) {
 

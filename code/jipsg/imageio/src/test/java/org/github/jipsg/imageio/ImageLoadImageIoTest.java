@@ -17,6 +17,7 @@
 package org.github.jipsg.imageio;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.imageio.ImageIO;
@@ -123,9 +124,10 @@ public class ImageLoadImageIoTest extends AbstractImageIoTest {
     }
 
     /**
-     * CMYK color model is supported.
+     * CMYK color model is not supported and fails with "javax.imageio.IIOException: Unsupported Image Type"
      */
-    @Test(expected = javax.imageio.IIOException.class)
+    @Ignore
+    @Test
     public void testLoadCMYKImage() throws Exception {
         assertValidBufferedImage(createBufferedImage(getImageFile("jpg", "test-image-cmyk-uncompressed.jpg")));
     }
@@ -135,46 +137,51 @@ public class ImageLoadImageIoTest extends AbstractImageIoTest {
     // ======================================================================
 
     /**
-     * Load a TIFF image with compression 2.
-     * Expecting a "javax.imageio.IIOException: Unsupported TIFF Compression value: 2" but got
-     * an "ArrayIndexOutOfBoundsException"
+     * Load a TIFF image with compression 2. Silently no buffered image
+     * is loaded at call causing assertValidBufferedImage() to fail.
      */
-    @Test(expected = java.lang.AssertionError.class)
+    @Test
+    @Ignore
     public void testLoadTiffGrayWithCompression2() throws Exception {
         assertValidBufferedImage(createBufferedImage(getImageFile("tiff", "test-single-gray-compression-type-2.tiff")));
     }
 
     /**
-     * Load a TIFF image with compression 3.
-     * Expecting a "javax.imageio.IIOException: Unsupported TIFF Compression value: 3"
+     * Load a TIFF image with compression 3. Silently no buffered image
+     * is loaded at call causing assertValidBufferedImage() to fail.
      */
-    @Test(expected = java.lang.AssertionError.class)
+    @Test
+    @Ignore
     public void testLoadTiffWithCompression3() throws Exception {
         assertValidBufferedImage(createBufferedImage(getImageFile("tiff", "test-single-gray-compression-type-3.tiff")));
     }
 
     /**
-     * Load a TIFF image with compression 4.
-     * Expecting a "javax.imageio.IIOException: Unsupported TIFF Compression value: 4"
+     * Load a TIFF image with compression 4. Silently no buffered image
+     * is loaded at call causing assertValidBufferedImage() to fail.
      */
-    @Test(expected = java.lang.AssertionError.class)
+    @Test
+    @Ignore
     public void testLoadTiffWithCompression4() throws Exception {
         assertValidBufferedImage(createBufferedImage(getImageFile("tiff", "test-single-gray-compression-type-4.tiff")));
     }
 
     /**
-     * Load a TIFF image with compression 4.
-     * Expecting a "javax.imageio.IIOException: Unsupported TIFF Compression value: 4"
+     * Load a TIFF image with compression 4. Silently no buffered image
+     * is loaded at call causing assertValidBufferedImage() to fail.
      */
-    @Test(expected = java.lang.AssertionError.class)
+    @Test
+    @Ignore
     public void testLoadTiffMultiPageGray() throws Exception {
         assertValidBufferedImage(createBufferedImage(getImageFile("tiff", "test-multi-gray-compression-type-4.tiff")));
     }
 
     /**
-     * Load a TIFF image with compression LZW.
+     * Load a TIFF image with compression LZW. Silently no buffered image
+     * is loaded at call causing assertValidBufferedImage() to fail.
      */
-    @Test(expected = java.lang.AssertionError.class)
+    @Test
+    @Ignore
     public void testLoadTiffSingleCmykCompressionLzw() throws Exception {
         assertValidBufferedImage(createBufferedImage(getImageFile("tiff", "test-single-cmyk-compression-lzw.tiff")));
     }

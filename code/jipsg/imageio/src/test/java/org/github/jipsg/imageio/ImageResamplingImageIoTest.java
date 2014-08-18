@@ -35,8 +35,7 @@ public class ImageResamplingImageIoTest extends AbstractImageIoTest {
     }
 
     /**
-     * Convert images having a transparency layer (alpha-channel) to JPG. Without
-     * further handling the alpha-channel will be rendered black
+     * Load various image types and re-sample them to 640 x 480.
      */
     @Test
     public void testResamplingImagesAsJpeg() throws Exception {

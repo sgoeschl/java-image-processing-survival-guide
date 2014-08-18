@@ -16,8 +16,8 @@
  */
 package org.github.jipsg.jai;
 
-import org.github.jipsg.common.AbstractImageTest;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.imageio.ImageIO;
@@ -123,9 +123,10 @@ public class ImageLoadJaiTest extends AbstractJaiTest {
     }
 
     /**
-     * CMYK color model is not supported.
+     * CMYK color model is not supported. The test fails with "javax.imageio.IIOException: Unsupported Image Type"
      */
-    @Test(expected = javax.imageio.IIOException.class)
+    @Test
+    @Ignore
     public void testLoadCMYKImage() throws Exception {
         assertValidBufferedImage(createBufferedImage(getImageFile("jpg", "test-image-cmyk-uncompressed.jpg")));
     }
