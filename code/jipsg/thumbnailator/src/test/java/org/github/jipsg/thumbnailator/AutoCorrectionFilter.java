@@ -9,11 +9,7 @@ import java.awt.image.ColorModel;
 import java.util.Arrays;
 import java.util.Map;
 /**
- * Created with IntelliJ IDEA.
- * User: sgoeschl
- * Date: 14.08.14
- * Time: 14:02
- * To change this template use File | Settings | File Templates.
+ * Copy & pasted from https://code.google.com/p/jalbum-autocorrect/source/browse/AutoCorrection/src/net/jalbum/filters/auto/AutoCorrectionFilter.java
  */
 public class AutoCorrectionFilter implements BufferedImageOp {
 
