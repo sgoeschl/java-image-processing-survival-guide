@@ -14,13 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.github.jipsg.twelvemonkey;
+package org.github.jipsg.twelvemonkeys;
 
 import org.github.jipsg.common.image.BufferedImageOperations;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
@@ -29,7 +28,7 @@ import java.util.List;
 /**
  * Load various images.
  */
-public class ImageConversionTwelveMonkeyTest extends AbstractTwelveMonkeyTest {
+public class ImageConversionTwelveMonkeysTest extends AbstractTwelveMonkeysTest {
 
     @Before
     public void setup() {

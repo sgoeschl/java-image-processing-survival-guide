@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.github.jipsg.twelvemonkey;
+package org.github.jipsg.twelvemonkeys;
 
 import com.twelvemonkeys.image.ResampleOp;
 import org.github.jipsg.common.AbstractImageTest;
@@ -24,16 +24,15 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 
 /**
  * Base class for testing TwelveMonkey library.
  */
-public class AbstractTwelveMonkeyTest extends AbstractImageTest {
+public class AbstractTwelveMonkeysTest extends AbstractImageTest {
 
     @Override
     public void setup() {
-        super.setModuleName("twelvemonkey");
+        super.setModuleName("twelvemonkeys");
         super.setup();
     }
 

@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.github.jipsg.twelvemonkey;
+package org.github.jipsg.twelvemonkeys;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -31,7 +31,7 @@ import java.util.Set;
 /**
  * Load various images.
  */
-public class ImageLoadTwelveMonkeyTest extends AbstractTwelveMonkeyTest {
+public class ImageLoadTwelveMonkeysTest extends AbstractTwelveMonkeysTest {
 
     @Before
     public void setup() {

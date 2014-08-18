@@ -14,9 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.github.jipsg.twelvemonkey;
+package org.github.jipsg.twelvemonkeys;
 
-import org.github.jipsg.common.image.BufferedImageOperations;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,7 +27,7 @@ import java.util.List;
 /**
  * Load various images.
  */
-public class ImageResamplingTwelveMonkeyTest extends AbstractTwelveMonkeyTest {
+public class ImageResamplingTwelveMonkeysTest extends AbstractTwelveMonkeysTest {
 
     @Before
     public void setup() {
