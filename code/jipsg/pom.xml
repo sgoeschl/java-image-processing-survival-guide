@@ -17,7 +17,7 @@
         <module>jai</module>
         <module>sanselan</module>
         <module>twelvemonkeys</module>
-        <module>thumbnailator</module>
+        <module>image-manipulation</module>
     </modules>
 
 </project>

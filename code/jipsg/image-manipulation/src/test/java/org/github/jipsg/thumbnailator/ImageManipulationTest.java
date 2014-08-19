@@ -17,16 +17,13 @@
 package org.github.jipsg.thumbnailator;
 
 import com.jhlabs.image.*;
-import org.github.jipsg.common.image.BufferedImageOperations;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.imageio.ImageIO;
-import javax.imageio.ImageWriter;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -57,6 +54,7 @@ public class ImageManipulationTest extends AbstractImageIoTest {
         List<File> sourceImageFileList = new ArrayList<File>();
 
         sourceImageFileList.add(getImageFile("samples", "under-exposed-black-white-image.jpg"));
+        sourceImageFileList.add(getImageFile("samples", "under-exposed-color-image.jpg"));
 
         for (File sourceImageFile : sourceImageFileList) {
 
@@ -64,7 +62,7 @@ public class ImageManipulationTest extends AbstractImageIoTest {
             assertValidBufferedImage(bufferedImage);
 
             BufferedImage leveledBufferedImage = new AutoCorrectionFilter().filter(bufferedImage, null);
-            BufferedImage sharpenedBufferedImage = new SharpenFilter().filter(leveledBufferedImage, null);
+            BufferedImage sharpenedBufferedImage = new UnsharpFilter().filter(leveledBufferedImage, null);
 
             File targetImageFile = createOutputFileName("testAutoCorrectionFilter", sourceImageFile, formatName);
             writeBufferedImage(sharpenedBufferedImage, formatName, targetImageFile);
@@ -92,9 +90,9 @@ public class ImageManipulationTest extends AbstractImageIoTest {
             assertValidBufferedImage(bufferedImage);
 
             BufferedImage greyscaleImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
-            Graphics g = greyscaleImage.getGraphics();
-            g.drawImage(bufferedImage, 0, 0, null);
-            g.dispose();
+            Graphics graphics = greyscaleImage.getGraphics();
+            graphics.drawImage(bufferedImage, 0, 0, null);
+            graphics.dispose();
             assertValidBufferedImage(greyscaleImage);
 
             File targetImageFile = createOutputFileName("testConvertToGrayScaleUsingAwt", sourceImageFile, formatName);
