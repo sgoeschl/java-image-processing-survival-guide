@@ -21,10 +21,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Load various images.
@@ -100,8 +105,12 @@ public class ImageConversionSanselanTest extends AbstractSanselanTest {
         sourceImageFileList.add(getImageFile("png", "test-image-transparent.png"));
 
         for(File sourceImageFile : sourceImageFileList) {
+
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
             assertValidBufferedImage(bufferedImage);
+            assertTrue("Expecting transparency", bufferedImage.getColorModel().hasAlpha());
+            assertTrue("Expecting ARGB color model", bufferedImage.getType() == BufferedImage.TYPE_INT_ARGB);
+
             File targetImageFile = createOutputFileName("testWriteTransparentImagesAsJpeg", sourceImageFile, formatName);
             writeBufferedImage(bufferedImage, formatName, targetImageFile);
         }
@@ -122,8 +131,20 @@ public class ImageConversionSanselanTest extends AbstractSanselanTest {
         sourceImageFileList.add(getImageFile("png", "test-image-transparent.png"));
 
         for(File sourceImageFile : sourceImageFileList) {
-            BufferedImage bufferedImage = BufferedImageOperations.fillTransparentPixel(createBufferedImage(sourceImageFile));
+
+            BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
             assertValidBufferedImage(bufferedImage);
+            assertTrue("Expecting transparency", bufferedImage.getColorModel().hasAlpha());
+            assertTrue("Expecting ARGB color model", bufferedImage.getType() == BufferedImage.TYPE_INT_ARGB);
+
+            BufferedImage rgbBufferedImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+            Graphics2D graphics = rgbBufferedImage.createGraphics();
+            graphics.drawImage(bufferedImage, 0, 0, null);
+            graphics.dispose();
+            assertValidBufferedImage(rgbBufferedImage);
+            assertFalse("Expecting no transparency", rgbBufferedImage.getColorModel().hasAlpha());
+            assertEquals("Expecting RGB color model", BufferedImage.TYPE_INT_RGB, rgbBufferedImage.getType());
+
             File targetImageFile = createOutputFileName("testWriteTransparentImagesWithAlphaChannelHandlingAsJpeg", sourceImageFile, formatName);
             writeBufferedImage(bufferedImage, formatName, targetImageFile);
         }
