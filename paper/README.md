@@ -54,12 +54,12 @@ TODO: explain BufferedImage
 
 Tackling this project requires some "divide and conquer" to keep the mind focused
 
-* Use Apache PDFBox for PDF to image conversion
-* Use ImageIO and JAI for converting image formats to JPEG
-* Use a Java-based open-source library for creating thumbnail efficiently
-* Hide the mechanics behind a Java implementation to be exposed to the caller
+* Use Apache PDFBox to create a PDF preview image
+* Use ImageIO to convert various image format to JPEG
+* Use JAI to read TIFF images
+* Use image scaling library for efficient thumbnail creation
+* Use custom JPEG compression parameters 
 * Do some thorough testing with real-life images
-* Roll out the new implementation incrementally across the production servers
 
 ## 4. Creating PDF Preview Image
 
@@ -85,12 +85,7 @@ List<BufferedImage> pdfToImage(
 }
 ```
 
-
-
 ## 5. Convert Image Formats to JPEG
-
-[Harald: I think the we should promote using the ImageIO API over JAI :-)]
-[Sigi: I would like to use my original approach to hightlight the short-comings]
 
 The heavy lifting of image format conversion is provided by the Java ImageIO API (the javax.imageio package): "This package contains the basic classes and interfaces for describing the contents of image files, including metadata and thumbnails (IIOImage); for controlling the image reading process (ImageReader, ImageReadParam, and ImageTypeSpecifier) and image writing process (ImageWriter and ImageWriteParam); for performing transcoding between formats (ImageTranscoder), and for reporting errors (IIOException)." (http://docs.oracle.com/javase/7/docs/api/javax/imageio/package-summary.html#package_description)
 
@@ -111,8 +106,23 @@ The reality looks not so simple any more
 
 * TIFF format is not supported out of the box using Java ImageIO
 * Some JPGs images can't be read using plain ImageIO
-* JAI has some extra JPG support but requires extra and/or native libraries
 * Some control is required regarding JPEG metadata and compression options
+
+# 6. JAI & TIFF Support
+
+The Java ImageIO library has no TIFF support - this can be added using Java Advanced Imaging (JAI). Getting JAI installed & running is not as straight-forward as it could be
+
+* Due to licensing issues the JAI libraries are not available on Maven Central and won't be downloaded automatically during a Maven build
+* The official download links referenced by Maven Central are partly broken 
+* The libraries are hard to find because the last release dates back to 10/2006
+
+Unfortunately JAI did not work as expected - the TIFFReader classes were found on the classpath but TIFFs were not processed using *ImageIO.read()*. While preparing the article the problem was solved - there is actually a **third** JAI library which was somehow missing from the initial setup - the *jai_imageio.jar*
+
+The following JAI libraries are used (and found in the code samples)
+
+* jai_codec-1.1.2_01.jar
+* jai_core-1.1.3.jar
+* jai_imageio-1.1.jar
 
 # 6. Setting JPEG Metadata
 
@@ -144,7 +154,7 @@ writeParam.setCompressionQuality(quality);
  
 Looking at the code snippets raises a few concerns
 
-* A fair amount of knowledge is required to accomplish common tasks
+* A fair amount of knowledge is required to accomplish a simple tasks
 * The code is prone to NPEs when the JPEG metadata is not available
 
 
@@ -176,30 +186,18 @@ I've never measured performance against the options you considered, but I believ
 [Sigi: no I was not aware of that - we can add a chapter covering "on-the-fly scaling"]
 
 
-## 8. Test With Real-Life Data
+## 8. Hitting Real-Life
 
-When the overall implementation was roughly finished a few hundred production images were used for a more thorough testing and the results were not promising - as expected. A couple of images were either not converted at all or the resulting images were severely broken.
+When the overall implementation was mostly finished a few hundred production images were used for a more thorough testing and the results were interesting. A couple of images were either not converted at all or the resulting images were severely broken - in other words the current implementation was not ready for production
 
-A few hours later the the following problems were identified:
+The following problems were identified:
 
-* GIF & PNG alpha-channels
 * CMYK color space
 * Missing/wrong image metadata causes NPE and decoding Exceptions
 * Memory usage of conversion - Decompression bombs - http://www.aerasec.de/security/advisories/decompression-bomb-vulnerability.html
 * Unsupported JPEG compression formats
-
-### 8.x Alpha-Channels
-
-The alpha channel stores transparency information and is used for the GIF and PNG image format on web pages so that images appear to have an arbitrary shape even on a non-uniform background (see http://en.wikipedia.org/wiki/Channel_(digital_image)). 
-
-Unfortunately The alpha-channel handling is broken in Java Advanced Imaging (JAI), (http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6371389) as shown using one of the production images
-
-![Alph-Channel Before](./images/alpha-channel-before.png)
-![Alph-Channel After](./images/alpha-channel-after.png)
-
-[More stuff to come ...]
-
-[You should probably explain a little better what is the issue here. In my experience, alhpa channel in general works really well in Java, however, there have been known issues with 4 channel JPEGs and ImageIO (written as ARGB, interpreted as CMYK while read, or the other way around). The bug referred is about JAI and PNG only, it doesn't relate to the standard ImageIO PNGImageWriter.]
+* GIF & PNG alpha-channels
+* Reliance on image file name extensions
 
 ### 8.x CMYK Color 
 
@@ -252,9 +250,19 @@ It's probably a good idea to do so, until libraries and frameworks have been upd
 
 Note that loading Custom ColorSpaces will eat memory. When loading many images at once reusing ICC profiles is a good idea. Many images contains embedded standard profiles, that will already be loaded by the JVM. But, be aware! ICC_Profile objects are mutable. It's therefore important to use these mutation operations with care, and make sure you either work on a non-shared instance or create a local copy before making changes. 
 
+### 8.x Alpha-Channels
+
+An alpha channel stores transparency information and is used for the GIF and PNG image format on web pages so that images appear to have an arbitrary shape even on a non-uniform background. The alpha-channel handling is non-intuitive when loading transparent GIFs/PNGs and saving them to a JPEG because the colors are messed up - either all black or having a red tint as shown below
+
+| Before                                                    | After                                                   |
+| ----------------------------------------------------------| ------------------------------------------------------- |
+| ![Alph-Channel Before](./images/alpha-channel-before.png) | ![Alph-Channel After](./images/alpha-channel-after.png) |
+
+This problem is caused by ImageIO using a mismatched color model when writing the JPEG image (e.g. *BufferedImage.TYPE_4BYTE_ABGR*) and can be avoided by converting the color model to *BufferedImage.TYPE_RGB* type relying on *Graphics2D.drawImage*. 
+
 ### 8.x Memory Usage
 
-During image scaling the source images is loaded and a BufferedImage is created containing the rastered and un-compressed image. In other words the memory foot-print of the BufferedImage can be 10-20 times bigger than the compressed source image which makes the operations team uneasy - a huge source image could cause excessive memory consumption which in turn can be used for a "Denial Of Service Attack". And developers hate it to be considered as the root cause for an successful DOS attack - dutifully the original image conversion source code contains the following sanity check to avoid memory problems
+During image scaling the uploaded image is read and a BufferedImage instance is created containing the rastered and un-compressed pixels. In other words the memory foot-print can be 10-20 times larger than the compressed source image which makes the operations team uneasy - a huge source image could cause excessive memory consumption which in turn can be used for a "Denial Of Service Attack". And developers hate it to be considered as the root cause for an successful DOS attack - dutifully the original image conversion source code contained the following sanity check to avoid memory problems
 
 ```
 if(imageSourceFile.length() > IMAGE_FILE_SIZE_LIMIT) {
@@ -262,18 +270,18 @@ if(imageSourceFile.length() > IMAGE_FILE_SIZE_LIMIT) {
 }
 ```
 
-The memory foot-print mostly depends on the image dimension and to a lesser extent to the file size of the uploaded image when compression is used. This obserservation leads directly to notion of "decompression bomb vulnerabilities" as described at [http://www.aerasec.de/security/advisories/decompression-bomb-vulnerability.html](http://www.aerasec.de/security/advisories/decompression-bomb-vulnerability.html). A hand-crafted unicolor PNG image containing 19.000 x 19.000 pixels uses only 44 KB of disk but potentially up to 1 GB of main memory - ooups.
+The memory foot-print mostly depends on the image dimension - the file size of an uploaded image is misleading when compression is used. This observation leads directly to notion of "decompression bomb vulnerabilities" as described at [http://www.aerasec.de/security/advisories/decompression-bomb-vulnerability.html](http://www.aerasec.de/security/advisories/decompression-bomb-vulnerability.html). A hand-crafted unicolor PNG image containing 19.000 x 19.000 pixels uses only 44 KB of disk but potentially up to 1 GB of main memory - ooups.
 
-In order to avoid such attacks the image metadata of the uploaded image file are retrieved - this is a fast operation which does not require to load the whole image file. But what are sensible limits regarding image size?
-
-A few examples
+In order to avoid such attacks the image metadata of the uploaded image file are retrieved - this is a fast operation which does not require to load the whole image file. But what are sensible limits regarding image size considering that
 
 * Nikon D610 supports up to 24 megapixel
 * Scanned A4 page with 300 DPI results in 35 megapixel (7015 x 4960)
-* Nokia Lumia 1020 provides up to 41 megapixel
+* Scanned A4 page with 600 DPI results in 140 megapixel (14030 x 9920)
+* Nokia Lumia 1020 uses a 42 megapixel sensor
 
-[Harald: Mention something about subsamping as a workaround, as we really don't need all that resolution in a web/non-huge-image-printing context?]
-[Sigi: for image scaling I need to load the source image into BufferedImage therefore memory consumption is an issue for a server environment]
+It was decided to use 45 megapixels as upper limit but this is actually a solution for the wrong problem. Instead of worrying about the dimension of uploaded images it is much smarter to scale the image on the front-end before uploading to the server conserving bandwith and server memory.
+
+[TODO - PDF scans contains tons of large images which caused a SIGSEGV on the production server]
 
 ### 8.x Image Metadata
 
@@ -366,3 +374,7 @@ TwelveMonkeys comes with a set of chainable filters that allows different conver
 - Watermarking
 - Content negotiation
 - Format conversion (any format to web format like JPEG or PNG)
+
+# References
+
+[1] Willis Blackburn, "Saving JPEGs ImageIO Gotchas", [http://originalwhatever.blogspot.co.at/2008/08/saving-jpegs-imageio-gotchas.html](http://originalwhatever.blogspot.co.at/2008/08/saving-jpegs-imageio-gotchas.html)
