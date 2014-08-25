@@ -8,7 +8,9 @@ Keywords: Java, Image Scaling, Image Conversion, ImageMagick, JMagick, PDFBox, J
 
 This paper provides real-life experience in replacing an ImageMagick/JMagick image conversion & scaling with a pure Java implementation covering Apache PDFBox, Java Advanced Imaging API (JAI), TwelveMonkeys ImageIO plug ins and different Java-based image-scaling libraries. 
 
+
 ## 1. The Customer Inquiry
+------------------------------------------------------------------
 
 A day starting with a customer inquiry - "How difficult is it to replace ImageMagick with a Java image processing library?!". A few seconds to ponder over the question - Java has graphics support built in, there is the Java Advanced Imaging API around and some image processing shouldn't be too hard after all - "Well, it depends on your exact requirements but not too difficult". 
 
@@ -34,7 +36,9 @@ On the other hand ImageMagick is a powerful and field-proven software used by th
 
 Regarding the customer inquiry - somehow replacing ImageMagick looks difficult now.
 
+
 ## 2. Java 2D API Primer
+------------------------------------------------------------------
 
 There are a number of common tasks when working with images
 
@@ -53,7 +57,9 @@ The *BufferedImage* is an accessible buffer of image data, essentially pixels, a
 
 The Java 2D API uses an *Service Provider Interface (SPI)* to utilize image readers & writers provided by extension libraries, e.g. the *Java Advanced Imaging (JAI)* library provides JPEG2000 and TIFF image readers & writers.
 
+
 ## 3. The Road Ahead
+------------------------------------------------------------------
 
 Tackling this project requires some "divide and conquer" to keep the tasks manageable
 
@@ -141,9 +147,7 @@ Which one are you suppose to use? Which one performs the fastest? Which one scal
 
 The good news are that all of them work and show comparable performance so the decision comes down to image quality and additional features. At the end "thumbnailator" was chosen due to its watermark support - this feature is not immediately needed but it is good to know that watermarking can be added using two lines of code (see https://code.google.com/p/thumbnailator/wiki/Examples#Creating_a_thumbnail_with_a_watermark).
 
-A naive implementation could use the original image to create the five scaled down instances but the requires CPU time depends mostly on the size of the source and target image.
-
-The CPU time needed for scaling depends mostly on the size of the source and target image and using a naive implementation could use the original image to create the five scaled down instances. Consequently the production code uses an already scaled image to create the next smaller image which has a dramatic impact on performance as shown below
+The CPU time needed for scaling depends mostly on the size of the source image and using a naive implementation could use the original image to create the five scaled down instances. Consequently the production code uses an already scaled image to create the next smaller image which has a dramatic impact on performance as shown below
 
 [TBD]
 
@@ -180,21 +184,54 @@ Looking at the code snippets raises a few concerns
 * A fair amount of knowledge is required to accomplish a simple tasks
 * The code is prone to NPEs when the JPEG metadata is not available
 
-## 4. Hitting Real-Life Test Images
 
-When the overall implementation was mostly finished a few hundred production images and custom test images were used for a more thorough testing and the results were interesting. A couple of images were either not converted at all or the resulting images were severely broken - in other words the current implementation was not ready for production
+## 4. Hitting Real-Life Test Data
+------------------------------------------------------------------
+
+When the overall implementation was mostly finished a few hundred production and a set of custom test images were used for a more thorough testing and the results were - well - interesting. A couple of images were either not converted at all or the resulting images were severely broken - in other words the current implementation was not ready for production
 
 The following problems were identified:
 
-* CMYK color space
 * GIF & PNG alpha-channels
 * Memory usage of conversion
+* CMYK color space
+
+### 4.1 Alpha-Channels
+
+An alpha channel stores transparency information and is used for the GIF and PNG image format on web pages so that images appear to have an arbitrary shape even on a non-uniform background. The alpha-channel handling is non-intuitive when loading transparent GIFs/PNGs and saving them to a JPEG because the colors are messed up - either all black or having a red tint as shown below
+
+| Before                                                    | After                                                   |
+| ----------------------------------------------------------| ------------------------------------------------------- |
+| ![Alph-Channel Before](./images/alpha-channel-before.png) | ![Alph-Channel After](./images/alpha-channel-after.png) |
+
+This problem is caused by ImageIO using a mismatched color model when writing the JPEG image (e.g. *BufferedImage.TYPE_4BYTE_ABGR*) and can be avoided by converting the color model to *BufferedImage.TYPE_RGB* type relying on *Graphics2D.drawImage*. Please note that this problem might also occur when applying an *AffineTransformOp* since this results in a BufferedImage having a *BufferedImage.TYPE_ARGB* type [1]. 
+
+### 4.2 Memory Usage 
+
+During image scaling the uploaded image is read and a BufferedImage instance is created containing the rastered and un-compressed pixels. In other words the memory foot-print can be 10-20 times larger than the compressed source image which makes the operations team uneasy - a huge source image could cause excessive memory consumption which in turn can be used for a "Denial Of Service Attack". And developers hate it to be considered as the root cause for an successful DOS attack - dutifully the original image conversion source code contained the following sanity check to avoid memory problems
+
+```
+if(imageSourceFile.length() > IMAGE_FILE_SIZE_LIMIT) {
+    throw new ImageConversionException("The image is too big ...");
+}
+```
+
+The memory foot-print mostly depends on the image dimension - the file size of an uploaded image is misleading when compression is used. This observation leads directly to notion of "decompression bomb vulnerabilities" as described at [http://www.aerasec.de/security/advisories/decompression-bomb-vulnerability.html](http://www.aerasec.de/security/advisories/decompression-bomb-vulnerability.html). A hand-crafted unicolor PNG image containing 19.000 x 19.000 pixels uses only 44 KB of disk but potentially up to 1 GB of main memory - ooups.
+
+In order to avoid such attacks the image metadata of the uploaded image file are retrieved - this is a fast operation which does not require to load the whole image file. But what are sensible limits regarding image size considering that
+
+* Nikon D610 supports up to 24 mega-pixel
+* Scanned A4 page with 300 DPI results in 35 mega-pixel (7015 x 4960)
+* Scanned A4 page with 600 DPI results in 140 mega-pixel (14030 x 9920)
+* Nokia Lumia 1020 uses a 42 mega-pixel sensor
+
+It was decided to use 45 mega-pixels as upper limit but this is actually a solution for the wrong problem. Instead of worrying about the dimension of uploaded images it is much smarter to scale the image on the front-end before uploading to the server conserving bandwidth and server memory.
 
 ### 4.1 CMYK Color 
 
 The CMYK color model is a subtractive color model used in color printing whereas most user-generated image uses the RGB additive color model. CMYK color space support is somewhat limited in Java, and there is no built-in CMYK color space, like it has for RGB. The main reason for this is that there is no standard CMYK color space. Unlike RGB that has standardized color profiles, like sRGB and AdobeRGB1998. CMYK color profiles originates from printer manufacturers and the printed press. Manufacturers and organizations have their own standardized profiles. 
 
-Google for CMYK to RGB will come up with various mathematical formulas. Typically something like this (from http://www.rapidtables.com/convert/color/cmyk-to-rgb.htm):
+Google for CMYK to RGB will come up with various mathematical formulas. Typically something like this (from [http://www.rapidtables.com/convert/color/cmyk-to-rgb.htm](http://www.rapidtables.com/convert/color/cmyk-to-rgb.htm)):
 
 > The R,G,B values are given in the range of 0..255.
 > The red (R) color is calculated from the cyan (C) and black (K) colors:
@@ -217,41 +254,13 @@ Luckily, most image files that use CMYK color space does have an embedded ICC  p
 
 To complicate things slightly in Java land: The default ImageIO JPEGImageReader will not read CMYK images. The most common workaround for now, is to read the image as raster, then convert the YCCK to CMYK, before finally converting to RGB using ICC profile and then creating a BufferedImage from the resulting raster.
 
-### 4.2 Alpha-Channels
-
-An alpha channel stores transparency information and is used for the GIF and PNG image format on web pages so that images appear to have an arbitrary shape even on a non-uniform background. The alpha-channel handling is non-intuitive when loading transparent GIFs/PNGs and saving them to a JPEG because the colors are messed up - either all black or having a red tint as shown below
-
-| Before                                                    | After                                                   |
-| ----------------------------------------------------------| ------------------------------------------------------- |
-| ![Alph-Channel Before](./images/alpha-channel-before.png) | ![Alph-Channel After](./images/alpha-channel-after.png) |
-
-This problem is caused by ImageIO using a mismatched color model when writing the JPEG image (e.g. *BufferedImage.TYPE_4BYTE_ABGR*) and can be avoided by converting the color model to *BufferedImage.TYPE_RGB* type relying on *Graphics2D.drawImage*. Please note that this problem might also occur when applying an *AffineTransformOp* since this results in a BufferedImage having a *BufferedImage.TYPE_ARGB* type [1]. 
-
-### 4.3 Memory Usage 
-
-During image scaling the uploaded image is read and a BufferedImage instance is created containing the rastered and un-compressed pixels. In other words the memory foot-print can be 10-20 times larger than the compressed source image which makes the operations team uneasy - a huge source image could cause excessive memory consumption which in turn can be used for a "Denial Of Service Attack". And developers hate it to be considered as the root cause for an successful DOS attack - dutifully the original image conversion source code contained the following sanity check to avoid memory problems
-
-```
-if(imageSourceFile.length() > IMAGE_FILE_SIZE_LIMIT) {
-    throw new ImageConversionException("The image is too big ...");
-}
-```
-
-The memory foot-print mostly depends on the image dimension - the file size of an uploaded image is misleading when compression is used. This observation leads directly to notion of "decompression bomb vulnerabilities" as described at [http://www.aerasec.de/security/advisories/decompression-bomb-vulnerability.html](http://www.aerasec.de/security/advisories/decompression-bomb-vulnerability.html). A hand-crafted unicolor PNG image containing 19.000 x 19.000 pixels uses only 44 KB of disk but potentially up to 1 GB of main memory - ooups.
-
-In order to avoid such attacks the image metadata of the uploaded image file are retrieved - this is a fast operation which does not require to load the whole image file. But what are sensible limits regarding image size considering that
-
-* Nikon D610 supports up to 24 megapixel
-* Scanned A4 page with 300 DPI results in 35 megapixel (7015 x 4960)
-* Scanned A4 page with 600 DPI results in 140 megapixel (14030 x 9920)
-* Nokia Lumia 1020 uses a 42 megapixel sensor
-
-It was decided to use 45 megapixels as upper limit but this is actually a solution for the wrong problem. Instead of worrying about the dimension of uploaded images it is much smarter to scale the image on the front-end before uploading to the server conserving bandwith and server memory.
-
 
 ## 5. In the Need of Twelve Monkeys
+------------------------------------------------------------------
 
-The Twelvemonkeys ImageIO project was created to solve many of the problems mentioned above. It was started when Harald was working for a Web CMS (Content Management System) vendor, that created CMS solutions targeted for the media industry (newspapers, broadcast). It's a web-centric CMS, and the initial version was created, because their web content management system needed support for more image formats. 
+Converting CMYK to RGB color space seemed non-trivial to implement considering that the release date was around the . A *stackoverflow* entry mentioned a "TwelveMonekys" library (see [http://stackoverflow.com/questions/2408613/problem-reading-jpeg-image-using-imageio-readfile-file](http://stackoverflow.com/questions/2408613/problem-reading-jpeg-image-using-imageio-readfile-file)) which lead to a Github repository. The Twelvemonkeys libraries turned out to be a collection of plug-ins using the *ImageIO's SPI* mechanism - in other words a drop-in replacement for JAI. Running the regression test suite showed that CMYK color space was properly handled and - even more important - no new issues were introduced. 
+
+The Twelvemonkeys ImageIO was started when Harald was working for a Web CMS (Content Management System) vendor, that created CMS solutions targeted for the media industry (newspapers, broadcast). It's a web-centric CMS, and the initial version was created, because their web content management system needed support for more image formats. 
 
 ### 5.1 A little bit of History
 
@@ -260,12 +269,10 @@ The Twelvemonkeys ImageIO project was created to solve many of the problems ment
 * Java (prior to J2SE  1.4) had only limited support for reading JPEG, PNG and GIF
 * And more importantly, no official API for writing images existed.
 * The APIs that existed was based around the java.awt.Image class, and not the more versatile BufferedImage class.
-
 * JMagick had support for many formats, but had no stream support, which is very bad when working with web architectures. Temporary writing to disk increases the response time, and slows down overall performance. Plus the lack of binary compatibility from version to version and being a nightmare to install.
 * JAI was around, but at the time reading & writing images using JAI required a different API. 
 * None of the libraries had proper support for PSD format (JMagick didn't support reading individual layers)
-
-The initial version had a simple read/write API, that dealt with BufferedImages. 
+* The initial version had a simple read/write API, that dealt with BufferedImages. 
 
 #### 2.x version
 
@@ -282,54 +289,68 @@ Nowadays, the world is a little different, thus the goals have changed:
     * Some parts seems to be open source, some parts not (like the native code)
     * Multiple, semi-overlapping forks (GitHub, Google code, private) with the same + its own license issues, making matters worse...
 * That said, if you can deal with the license, and don't run into the bugs mentioned, JAI is still the most complete and mature packages for dealing with images in Java.
-    
 * JMagick hasn't changed much. TwelveMonkeys has wrapper readers/writers to allow users to use ImageMagicks rich format support, while using the ImageIO API. However, due to the nature of the library, it will never have the same performance or rich features.
-
 * Apache Commons Imaging has emerged from Sanselan. A quite mature library, but unfortunately has its own API. Combined with the the fact that it doesn't support all the same formats as ImageIO, this means you either have to program against multiple APIs, create your own wrappers or even your own abstraction API on top of these multiple APIs.
 
 We need something better! We deserver better. :-)
 
 ### 3.0 version (current)
 
- - To be released "very soon" (development/pre-release versions has been in use at customer sites for 2-3 years)
- - Very much improved JPEG (read) support (CMYK handling, improved color profile handling, JFIF and EXIF support) over the standard JPEGImageReader that comes with the (Oracle) JRE.
-    - Solves most of the issues that usually crops up at StackOverflow, "Exception reading JPEG with colorspace X", "Inconsistent metadata when reading JPEG" etc.
- - Full TIFF baseline support + most de facto standards + many popular extensions (read-only for now)
- - Support for CMYK color space and proper ICC profile based CMYK to RGB conversion support throughout the project
+* To be released "very soon" (development/pre-release versions has been in use at customer sites for 2-3 years)
+* Very much improved JPEG (read) support (CMYK handling, improved color profile handling, JFIF and EXIF support) over the standard JPEGImageReader that comes with the (Oracle) JRE. Solves most of the issues that usually crops up at StackOverflow
+    * "Exception reading JPEG with colorspace X"
+    * "Inconsistent metadata when reading JPEG"
+* Full TIFF baseline support + most de facto standards + many popular extensions (read-only for now)
+* Support for CMYK color space and proper ICC profile based CMYK to RGB conversion support throughout the project
 
-### TwevelMonkeys JPEG plug-in in aprticular
- Goal: Read everything that can be read by other software*. 
- 
- Currently, not doing too bad. 
- - However, because the base JPEG decoding is done by the same JNI code that the standard Java JPEGImageReader uses, we "only" support Huffman encoded, lossy JPEG, either baseline or progressive (ie, no Arithmetic encoding, no lossless compression). These are the compressions used in roughly 90% of all JPEGs in the known universe, and most web browsers supports only these types of JPEG compression as well, so in a web environment it is not much of a problem.
- 
- *) Other software here, typically means libJPEG, but also Adobe Photoshop and others. 
+## 5.2 TwevelMonkeys JPEG Plug-in
 
-### On-the-fly conversion of images
+The goal is to read everything that can be read by other software - currently not doing too bad - however 
 
-Servlet Filter based.
-Reads the image from source, writes the scaled version directly to the response stream (alternatively through a cache).
+* However, because the base JPEG decoding is done by the same JNI code that the standard Java JPEGImageReader uses, we "only" support Huffman encoded, lossy JPEG, either baseline or progressive (ie, no Arithmetic encoding, no lossless compression). These are the compressions used in roughly 90% of all JPEGs in the known universe, and most web browsers supports only these types of JPEG compression as well, so in a web environment it is not much of a problem. 
+* Other software here, typically means libJPEG, but also Adobe Photoshop and others. 
 
-Pros:
 
-- May save disk space
-- Saves up-front work that may slow down workflow
- 
-Cons:
+## 6. Production Issues
+------------------------------------------------------------------
 
-- Needs more resources for the (first) request
-- More complicated setup (caching etc)
+Unsurprisingly real life is harsh on your code and exposes dormant issues - within six months in production the following problems were encountered
 
-TwelveMonkeys comes with a set of chainable filters that allows different conversions and effects to be applied to images "on-the-fly".
+* Reliance on file names
+* Memory consumption of PDF preview generation
+* Unsupported JPEG compression flavors
+* Unsupported TIFF compression algorithms
 
-- Resampling (scaling)
-- Cropping (create different aspects)
-- Color conversion or effects (like grayscale, vintage/lomo look etc)
-- Watermarking
-- Content negotiation
-- Format conversion (any format to web format like JPEG or PNG)
+## 6.1 Reliance On File Names
+
+When uploading an image file the file name and content type of the uploaded image is passed to the server and is stored on the server's local file system. The existing code base ignored the content type and only used the file name extension to determine if the image format is supported. That's fine if all your clients use proper file names but failed sometimes for Android apps sending "image.bin". 
+
+In general there are three bits of information to determine the content type of an uploaded image
+
+* File names are brittle since they may end with ".bin" or have no extension at all
+* Content types are a better choice but sometimes ambiguous, e.g. PDF files might be uploaded with content types of "application/pdf", "text/plain" or "application/octet-stream"
+* The content of the uploaded images can be analyzed to determine it content name using so-called "magic" byte sequence which is known as "media type sniffing" or "content detection".
+
+## 6.x PDF Preview Generation Memory Consumption
+
+## 6.X Unsupported JEPG Compression
+
+## 6.X Unsupported TIFF Compression
+
+
+# 7. Image Optimization
+------------------------------------------------------------------
+
+User-uploaded images of estate adverts often have a bad quality
+
+* Photos taken from inside an appartment often show a bright windowleaving the remaining image under-exposed
+* Photos taken from a house during bright daylight leaves the house under-exposed
+* A few photos are wrongly exposed
+
+
 
 # References
+------------------------------------------------------------------
 
 [1] Willis Blackburn, "Saving JPEGs ImageIO Gotchas", [http://originalwhatever.blogspot.co.at/2008/08/saving-jpegs-imageio-gotchas.html](http://originalwhatever.blogspot.co.at/2008/08/saving-jpegs-imageio-gotchas.html)
 
@@ -375,3 +396,28 @@ Often, this is not the metadata you want. Humans typically wants Exif or IPCT me
  - PNM read/write, metadata support
  - CR2 support (limited read, thumbnail), TIFF/EXIF metadata
  - (maybe JPEG lossless reading)
+
+### On-the-fly conversion of images
+
+Servlet Filter based.
+Reads the image from source, writes the scaled version directly to the response stream (alternatively through a cache).
+
+Pros:
+
+- May save disk space
+- Saves up-front work that may slow down workflow
+ 
+Cons:
+
+- Needs more resources for the (first) request
+- More complicated setup (caching etc)
+
+TwelveMonkeys comes with a set of chainable filters that allows different conversions and effects to be applied to images "on-the-fly".
+
+- Resampling (scaling)
+- Cropping (create different aspects)
+- Color conversion or effects (like grayscale, vintage/lomo look etc)
+- Watermarking
+- Content negotiation
+- Format conversion (any format to web format like JPEG or PNG)
+
