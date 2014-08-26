@@ -8,9 +8,8 @@ Keywords: Java, Image Scaling, Image Conversion, ImageMagick, JMagick, PDFBox, J
 
 This paper provides real-life experience in replacing an ImageMagick/JMagick image conversion & scaling with a pure Java implementation covering Apache PDFBox, Java Advanced Imaging API (JAI), TwelveMonkeys ImageIO plug ins and different Java-based image-scaling libraries. 
 
-
-## 1. The Customer Inquiry
 ------------------------------------------------------------------
+## 1. The Customer Inquiry
 
 A day starting with a customer inquiry - "How difficult is it to replace ImageMagick with a Java image processing library?!". A few seconds to ponder over the question - Java has graphics support built in, there is the Java Advanced Imaging API around and some image processing shouldn't be too hard after all - "Well, it depends on your exact requirements but not too difficult". 
 
@@ -37,8 +36,8 @@ On the other hand ImageMagick is a powerful and field-proven software used by th
 Regarding the customer inquiry - somehow replacing ImageMagick looks difficult now.
 
 
-## 2. Java 2D API Primer
 ------------------------------------------------------------------
+## 2. Java 2D API Primer
 
 There are a number of common tasks when working with images
 
@@ -58,8 +57,8 @@ The *BufferedImage* is an accessible buffer of image data, essentially pixels, a
 The Java 2D API uses an *Service Provider Interface (SPI)* to utilize image readers & writers provided by extension libraries, e.g. the *Java Advanced Imaging (JAI)* library provides JPEG2000 and TIFF image readers & writers.
 
 
-## 3. The Road Ahead
 ------------------------------------------------------------------
+## 3. The Road Ahead
 
 Tackling this project requires some "divide and conquer" to keep the tasks manageable
 
@@ -184,9 +183,8 @@ Looking at the code snippets raises a few concerns
 * A fair amount of knowledge is required to accomplish a simple tasks
 * The code is prone to NPEs when the JPEG metadata is not available
 
-
-## 4. Hitting Real-Life Test Data
 ------------------------------------------------------------------
+## 4. Hitting Real-Life Test Data
 
 When the overall implementation was mostly finished a few hundred production and a set of custom test images were used for a more thorough testing and the results were - well - interesting. A couple of images were either not converted at all or the resulting images were severely broken - in other words the current implementation was not ready for production
 
@@ -233,16 +231,16 @@ The CMYK color model is a subtractive color model used in color printing whereas
 
 Google for CMYK to RGB will come up with various mathematical formulas. Typically something like this (from [http://www.rapidtables.com/convert/color/cmyk-to-rgb.htm](http://www.rapidtables.com/convert/color/cmyk-to-rgb.htm)):
 
-> The R,G,B values are given in the range of 0..255.
-> The red (R) color is calculated from the cyan (C) and black (K) colors:
+The R,G,B values are given in the range of 0..255.
+The red (R) color is calculated from the cyan (C) and black (K) colors:
 
 >  *R = 255 × (1-C) × (1-K)*
 
-> The green color (G) is calculated from the magenta (M) and black (K) colors:
+The green color (G) is calculated from the magenta (M) and black (K) colors:
  
 >    *G = 255 × (1-M) × (1-K)*
 
-> The blue color (B) is calculated from the yellow (Y) and black (K) colors:
+The blue color (B) is calculated from the yellow (Y) and black (K) colors:
 
 >    *B = 255 × (1-Y) × (1-K)*
 
@@ -254,9 +252,8 @@ Luckily, most image files that use CMYK color space does have an embedded ICC  p
 
 To complicate things slightly in Java land: The default ImageIO JPEGImageReader will not read CMYK images. The most common workaround for now, is to read the image as raster, then convert the YCCK to CMYK, before finally converting to RGB using ICC profile and then creating a BufferedImage from the resulting raster.
 
-
-## 5. In the Need of Twelve Monkeys
 ------------------------------------------------------------------
+## 5. In the Need of Twelve Monkeys
 
 Converting CMYK to RGB color space seemed non-trivial to implement considering that the release date was around the . A *stackoverflow* entry mentioned a "TwelveMonekys" library (see [http://stackoverflow.com/questions/2408613/problem-reading-jpeg-image-using-imageio-readfile-file](http://stackoverflow.com/questions/2408613/problem-reading-jpeg-image-using-imageio-readfile-file)) which lead to a Github repository. The Twelvemonkeys libraries turned out to be a collection of plug-ins using the *ImageIO's SPI* mechanism - in other words a drop-in replacement for JAI. Running the regression test suite showed that CMYK color space was properly handled and - even more important - no new issues were introduced. 
 
@@ -311,13 +308,13 @@ The goal is to read everything that can be read by other software - currently no
 * Other software here, typically means libJPEG, but also Adobe Photoshop and others. 
 
 
-## 6. Production Issues
 ------------------------------------------------------------------
+## 6. Production Issues
 
 Unsurprisingly real life is harsh on your code and exposes dormant issues - within six months in production the following problems were encountered
 
 * Reliance on file names
-* Memory consumption of PDF preview generation
+* Segment Violation during PDF processing
 * Unsupported JPEG compression flavors
 * Unsupported TIFF compression algorithms
 
@@ -331,15 +328,64 @@ In general there are three bits of information to determine the content type of 
 * Content types are a better choice but sometimes ambiguous, e.g. PDF files might be uploaded with content types of "application/pdf", "text/plain" or "application/octet-stream"
 * The content of the uploaded images can be analyzed to determine it content name using so-called "magic" byte sequence which is known as "media type sniffing" or "content detection".
 
-## 6.x PDF Preview Generation Memory Consumption
+## 6.x Segment Violation During PDF Processing
+
+Out of the blue within three production server went down due to a JRE crash as shown below
+
+```
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGSEGV (0xb) at pc=0x00007fce89c42353, pid=20878, tid=140525025629952
+#
+# JRE version: Java(TM) SE Runtime Environment (7.0_45-b18) (build 1.7.0_45-b18)
+# Java VM: Java HotSpot(TM) 64-Bit Server VM (24.45-b08 mixed mode linux-amd64 compressed oops)
+# Problematic frame:
+# C  [libawt.so+0x77353]  IntArgbPreToIntRgbSrcOverMaskBlit+0x2a3
+#
+```
+
+```
+Stack: [0x00007fce882c1000,0x00007fce883c2000],  sp=0x00007fce883b8428,  free space=989k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+C  [libawt.so+0x77353]  IntArgbPreToIntRgbSrcOverMaskBlit+0x2a3
+C  [libawt.so+0x45017]  Java_sun_java2d_loops_TransformHelper_Transform+0xeb7
+j  sun.java2d.loops.TransformHelper.Transform(Lsun/java2d/loops/MaskBlit;Lsun/java2d/SurfaceData;Lsun/java2d/SurfaceData;Ljava/awt/Composite;Lsun/java2d/pipe/Region;Ljava/awt/geom/AffineTransform;IIIIIIIII[III)V+0
+j  sun.java2d.pipe.DrawImage.renderImageXform(Lsun/java2d/SunGraphics2D;Ljava/awt/Image;Ljava/awt/geom/AffineTransform;IIIIILjava/awt/Color;)V+505
+j  sun.java2d.pipe.DrawImage.transformImage(Lsun/java2d/SunGraphics2D;Ljava/awt/Image;IILjava/awt/geom/AffineTransform;I)V+366
+j  sun.java2d.pipe.DrawImage.transformImage(Lsun/java2d/SunGraphics2D;Ljava/awt/Image;Ljava/awt/geom/AffineTransform;Ljava/awt/image/ImageObserver;)Z+17
+j  sun.java2d.pipe.ValidatePipe.transformImage(Lsun/java2d/SunGraphics2D;Ljava/awt/Image;Ljava/awt/geom/AffineTransform;Ljava/awt/image/ImageObserver;)Z+17
+j  sun.java2d.SunGraphics2D.drawImage(Ljava/awt/Image;Ljava/awt/geom/AffineTransform;Ljava/awt/image/ImageObserver;)Z+111
+j  org.apache.pdfbox.pdfviewer.PageDrawer.drawImage(Ljava/awt/Image;Ljava/awt/geom/AffineTransform;)V+35
+j  org.apache.pdfbox.util.operator.pagedrawer.Invoke.process(Lorg/apache/pdfbox/util/PDFOperator;Ljava/util/List;)V+398
+j  org.apache.pdfbox.util.PDFStreamEngine.processOperator(Lorg/apache/pdfbox/util/PDFOperator;Ljava/util/List;)V+35
+j  org.apache.pdfbox.util.PDFStreamEngine.processSubStream(Lorg/apache/pdfbox/cos/COSStream;)V+126
+j  org.apache.pdfbox.util.PDFStreamEngine.processSubStream(Lorg/apache/pdfbox/pdmodel/PDPage;Lorg/apache/pdfbox/pdmodel/PDResources;Lorg/apache/pdfbox/cos/COSStream;)V+20
+j  org.apache.pdfbox.util.PDFStreamEngine.processStream(Lorg/apache/pdfbox/pdmodel/PDPage;Lorg/apache/pdfbox/pdmodel/PDResources;Lorg/apache/pdfbox/cos/COSStream;)V+43
+j  org.apache.pdfbox.pdfviewer.PageDrawer.drawPage(Ljava/awt/Graphics;Lorg/apache/pdfbox/pdmodel/PDPage;Ljava/awt/Dimension;)V+80
+j  org.apache.pdfbox.pdmodel.PDPage.convertToImage(II)Ljava/awt/image/BufferedImage;+310
+```
+
+What happened - something very similiar to an image decompression bomb caused by a PDF containing a scan with 10200 x 13992 pixels. Again an image size sanity check was added using the code snippet shown below which determines the size of embedded images.
+
+```
+PDPage page = ...
+for (PDXObject embeddedObject : page.getResources().getXObjects().values()) {
+    if (embeddedObject instanceof PDXObjectImage) {
+        int width = ((PDXObjectImage) embeddedObject).getWidth();
+        int height = ((PDXObjectImage) embeddedObject).getHeight();
+    }
+}
+```            
+
 
 ## 6.X Unsupported JEPG Compression
 
 ## 6.X Unsupported TIFF Compression
 
 
-# 7. Image Optimization
 ------------------------------------------------------------------
+# 7. Image Optimization
 
 User-uploaded images of estate adverts often have a bad quality
 
@@ -349,8 +395,8 @@ User-uploaded images of estate adverts often have a bad quality
 
 
 
-# References
 ------------------------------------------------------------------
+# References
 
 [1] Willis Blackburn, "Saving JPEGs ImageIO Gotchas", [http://originalwhatever.blogspot.co.at/2008/08/saving-jpegs-imageio-gotchas.html](http://originalwhatever.blogspot.co.at/2008/08/saving-jpegs-imageio-gotchas.html)
 
