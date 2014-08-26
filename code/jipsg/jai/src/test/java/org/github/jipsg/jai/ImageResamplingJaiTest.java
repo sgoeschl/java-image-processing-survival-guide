@@ -58,4 +58,21 @@ public class ImageResamplingJaiTest extends AbstractJaiTest {
             writeBufferedImage(resampledBufferedImage, formatName, targetImageFile);
         }
     }
+    @Test
+    public void testWriteImageWithQualityAndDpi() throws Exception {
+
+        File targetImageFile;
+        String formatName = "jpeg";
+
+        File sourceImageFile = getImageFile("jpg", "marble.jpg");
+        BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
+        assertValidBufferedImage(bufferedImage);
+        BufferedImage resampledBufferdImage = resample(bufferedImage, 640, 640);
+        assertValidBufferedImage(resampledBufferdImage);
+
+        // write as JPEG
+        targetImageFile = createOutputFileName("testWriteImageWithQualityAndDpi", sourceImageFile, "jpg");
+        writeBufferedImage(resampledBufferdImage, 0.10f, 123, formatName, targetImageFile);
+    }
+
 }

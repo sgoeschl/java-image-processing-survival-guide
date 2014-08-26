@@ -21,6 +21,8 @@ import org.junit.Test;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +30,9 @@ import java.util.List;
  * Load various images.
  */
 public class ImageResamplingImageIoTest extends AbstractImageIoTest {
+
+    private static final BigDecimal BD_1000 = new BigDecimal(1000);
+    private static final BigDecimal CM_INCH_RATIO = new BigDecimal(0.0254);
 
     @Before
     public void setup() {
@@ -57,5 +62,22 @@ public class ImageResamplingImageIoTest extends AbstractImageIoTest {
             File targetImageFile = createOutputFileName("testResamplingImagesAsJpeg", sourceImageFile, formatName);
             writeBufferedImage(resampledBufferdImage, formatName, targetImageFile);
         }
+    }
+
+    @Test
+    public void testWriteImageWithQualityAndDpi() throws Exception {
+
+        File targetImageFile;
+        String formatName = "jpeg";
+
+        File sourceImageFile = getImageFile("jpg", "marble.jpg");
+        BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
+        assertValidBufferedImage(bufferedImage);
+        BufferedImage resampledBufferdImage = resample(bufferedImage, 640, 640);
+        assertValidBufferedImage(resampledBufferdImage);
+
+        // write as JPEG
+        targetImageFile = createOutputFileName("testWriteImageWithQualityAndDpi", sourceImageFile, "jpg");
+        writeBufferedImage(resampledBufferdImage, 0.10f, 123, formatName, targetImageFile);
     }
 }
