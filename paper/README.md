@@ -15,8 +15,8 @@ A day starting with a customer inquiry - "How difficult is it to replace ImageMa
 
 Let's have a closer look at the customer's system - it is a classified ads platform allowing their users to create adverts and upload images over the browser or iOS & Android apps as shown below
 
-![Advert Mobile Web](./images/willhaben-advert-mobile.png)
-![Image Gallery Web](./images/willhaben-advert-desktop.png)
+![Advert Mobile Web](./images/willhaben-advert-mobile-small.png)
+![Image Gallery Web](./images/willhaben-advert-desktop-small.png)
 
 The heavy lifting is done by ImageMagick - a native image-processing command-line tool available for most platforms. JMagick exposes ImageMagick's native code over JNI (Java Native Interface) but this approach has a few short-comings
 
@@ -261,7 +261,7 @@ The Twelvemonkeys ImageIO was started when Harald was working for a Web CMS (Con
 
 ### 5.1 A little bit of History
 
-#### 1.x version
+*** 1.x version ***
 
 * Java (prior to J2SE  1.4) had only limited support for reading JPEG, PNG and GIF
 * And more importantly, no official API for writing images existed.
@@ -271,7 +271,7 @@ The Twelvemonkeys ImageIO was started when Harald was working for a Web CMS (Con
 * None of the libraries had proper support for PSD format (JMagick didn't support reading individual layers)
 * The initial version had a simple read/write API, that dealt with BufferedImages. 
 
-#### 2.x version
+*** 2.x version ***
 
 Nowadays, the world is a little different, thus the goals have changed: 
 
@@ -291,7 +291,7 @@ Nowadays, the world is a little different, thus the goals have changed:
 
 We need something better! We deserver better. :-)
 
-### 3.0 version (current)
+*** 3.0 version (current) ***
 
 * To be released "very soon" (development/pre-release versions has been in use at customer sites for 2-3 years)
 * Very much improved JPEG (read) support (CMYK handling, improved color profile handling, JFIF and EXIF support) over the standard JPEGImageReader that comes with the (Oracle) JRE. Solves most of the issues that usually crops up at StackOverflow
@@ -300,7 +300,7 @@ We need something better! We deserver better. :-)
 * Full TIFF baseline support + most de facto standards + many popular extensions (read-only for now)
 * Support for CMYK color space and proper ICC profile based CMYK to RGB conversion support throughout the project
 
-## 5.2 TwevelMonkeys JPEG Plug-in
+### 5.2 TwevelMonkeys JPEG Plug-in
 
 The goal is to read everything that can be read by other software - currently not doing too bad - however 
 
@@ -318,7 +318,7 @@ Unsurprisingly real life is harsh on your code and exposes dormant issues - with
 * Unsupported JPEG compression flavors
 * Unsupported TIFF compression algorithms
 
-## 6.1 Reliance On File Names
+## 6.1 File Extensions versus Content Types
 
 When uploading an image file the file name and content type of the uploaded image is passed to the server and is stored on the server's local file system. The existing code base ignored the content type and only used the file name extension to determine if the image format is supported. That's fine if all your clients use proper file names but failed sometimes for Android apps sending "image.bin". 
 
@@ -328,9 +328,9 @@ In general there are three bits of information to determine the content type of 
 * Content types are a better choice but sometimes ambiguous, e.g. PDF files might be uploaded with content types of "application/pdf", "text/plain" or "application/octet-stream"
 * The content of the uploaded images can be analyzed to determine it content name using so-called "magic" byte sequence which is known as "media type sniffing" or "content detection".
 
-## 6.x Segment Violation During PDF Processing
+## 6.2 Segment Violation During PDF Processing
 
-Out of the blue within three production server went down due to a JRE crash as shown below
+Out of the blue three production server went down due to a JRE crash as shown below
 
 ```
 #
@@ -366,7 +366,10 @@ j  org.apache.pdfbox.pdfviewer.PageDrawer.drawPage(Ljava/awt/Graphics;Lorg/apach
 j  org.apache.pdfbox.pdmodel.PDPage.convertToImage(II)Ljava/awt/image/BufferedImage;+310
 ```
 
-What happened - something very similiar to an image decompression bomb caused by a PDF containing a scan with 10200 x 13992 pixels. Again an image size sanity check was added using the code snippet shown below which determines the size of embedded images.
+What happened - something very similiar to an image decompression bomb caused by a PDF containing a scan with 10200 x 13992 pixels. The code fails to process the PDF, the JRE crashes and the end-user is unhappy since the PDF upload fails
+
+
+Again an image size sanity check was added using the code snippet shown below which determines the size of embedded images.
 
 ```
 PDPage page = ...
@@ -378,20 +381,40 @@ for (PDXObject embeddedObject : page.getResources().getXObjects().values()) {
 }
 ```            
 
+## 6.3 Black Borders After Sharpening
 
-## 6.X Unsupported JEPG Compression
+Sharpening of an image is a simple convolution operation as shown below
 
-## 6.X Unsupported TIFF Compression
+```
+BufferedImage src;
+Kernel kernel = new Kernel(3, 3, new float[]{ 0.0F, -0.2F, 0.0F, -0.2F, 1.8F, -0.2F, 0.0F, -0.2F, 0.0F });
+ConvolveOp sharpeningOp = new ConvolveOp(kernel).filter(src, temp);
+return sharpeningOp.filter(src, temp);
+```
 
+After some time customers started complaining about black borders around their uploaded & scaled images and initially Siegfried believed that the black border was caused by the image scaling library. Strangely enough the problem did not disappear when testing with a different library. The following link ([http://www.informit.com/articles/article.aspx?p=1013851&seqNum=5|http://www.informit.com/articles/article.aspx?p=1013851&seqNum=5]) shed some light on the problem
+
+* Convolution takes the neighbours as defined in the kernel matrix
+* Points located at the borders have not enough neighbours
+* Java 2D uses a black pixel in this case
+
+This behaviour can be changed by using an additional paramter
+
+```
+BufferedImage src;
+Kernel kernel = new Kernel(3, 3, new float[]{ 0.0F, -0.2F, 0.0F, -0.2F, 1.8F, -0.2F, 0.0F, -0.2F, 0.0F });
+ConvolveOp sharpeningOp = new ConvolveOp(kernel, ConvolveOp.EDGE_NO_OP, null);
+return sharpeningOp.filter(src, temp);
+```
 
 ------------------------------------------------------------------
 # 7. Image Optimization
 
-User-uploaded images of estate adverts often have a bad quality
+Many images of the customer's site are user-uploaded photos of real estate adverts. They often have a poor quality
 
+* A few photos are wrongly exposed
 * Photos taken from inside an appartment often show a bright windowleaving the remaining image under-exposed
 * Photos taken from a house during bright daylight leaves the house under-exposed
-* A few photos are wrongly exposed
 
 
 
