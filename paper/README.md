@@ -378,6 +378,16 @@ for (PDXObject embeddedObject : page.getResources().getXObjects().values()) {
 }
 ```            
 
+## 6.x Thumbnailator & GIF Images
+
+A real-estate agent complained that its pictures are of a very poor quality and the complaint was justified as shown below
+
+
+| Before                                                    | After                                                   |
+| ----------------------------------------------------------| ------------------------------------------------------- |
+| ![Alph-Channel Before](./images/house-before.gif)         | ![Alph-Channel After](./images/house-after.jpg) |
+
+https://code.google.com/p/thumbnailator/issues/detail?id=65
 
 ## 6.X Unsupported JEPG Compression
 
