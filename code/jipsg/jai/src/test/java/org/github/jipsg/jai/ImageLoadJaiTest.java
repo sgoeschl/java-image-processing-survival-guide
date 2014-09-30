@@ -21,12 +21,13 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import static org.junit.Assert.*;
+
 
 /**
  * Load various images.
@@ -137,8 +138,6 @@ public class ImageLoadJaiTest extends AbstractJaiTest {
 
     /**
      * Load a TIFF image with compression 2.
-     * Expecting a "javax.imageio.IIOException: Unsupported TIFF Compression value: 2" but got
-     * an "ArrayIndexOutOfBoundsException"
      */
     @Test
     public void testLoadTiffGrayWithCompression2() throws Exception {
@@ -155,8 +154,7 @@ public class ImageLoadJaiTest extends AbstractJaiTest {
     }
 
     /**
-     * Load a TIFF image with compression 4.
-     * Expecting a "javax.imageio.IIOException: Unsupported TIFF Compression value: 4"
+     * Load a single-page TIFF image with compression 4.
      */
     @Test
     public void testLoadTiffWithCompression4() throws Exception {
@@ -164,8 +162,7 @@ public class ImageLoadJaiTest extends AbstractJaiTest {
     }
 
     /**
-     * Load a TIFF image with compression 4.
-     * Expecting a "javax.imageio.IIOException: Unsupported TIFF Compression value: 4"
+     * Load a multi-page TIFF image with compression 4.
      */
     @Test
     public void testLoadTiffMultiPageGray() throws Exception {
@@ -179,4 +176,61 @@ public class ImageLoadJaiTest extends AbstractJaiTest {
     public void testLoadTiffSingleCmykCompressionLzw() throws Exception {
         assertValidBufferedImage(createBufferedImage(getImageFile("tiff", "test-single-cmyk-compression-lzw.tiff")));
     }
+
+    /**
+     * Load a TIFF image with compression type 7 (JPEG).
+     */
+    @Test
+    public void testLoadTiffMultiRgbCompression7() throws Exception {
+        assertValidBufferedImage(createBufferedImage(getImageFile("tiff", "test-multi-rgb-compression-type-7.tiff")));
+    }
+
+    /**
+     * Load a multi-page TIFF image and split it into its individual pages.
+     */
+    @Test
+    public void testExtractPagesFromMultiPageTiffCompression4() throws Exception {
+
+        File sourceImageFile = getImageFile("tiff", "test-multi-gray-compression-type-4.tiff");
+        ImageInputStream is = ImageIO.createImageInputStream(sourceImageFile);
+
+        // get the first matching reader
+        Iterator<ImageReader> iterator = ImageIO.getImageReaders(is);
+        ImageReader imageReader = iterator.next();
+        imageReader.setInput(is);
+
+        // split the multi-page TIFF
+        int pages = imageReader.getNumImages(true);
+        for(int i=0; i<pages; i++) {
+            BufferedImage bufferedImage = imageReader.read(i);
+            assertValidBufferedImage(bufferedImage);
+        }
+
+        assertEquals("Expect to have 2 pages", 2, pages);
+    }
+
+    /**
+     * Load a multi-page TIFF image and split it into its individual pages.
+     */
+    @Test
+    public void testExtractPagesFromMultiPageTiffCompression7() throws Exception {
+
+        File sourceImageFile = getImageFile("tiff", "test-multi-rgb-compression-type-7.tiff");
+        ImageInputStream is = ImageIO.createImageInputStream(sourceImageFile);
+
+        // get the first matching reader
+        Iterator<ImageReader> iterator = ImageIO.getImageReaders(is);
+        ImageReader imageReader = iterator.next();
+        imageReader.setInput(is);
+
+        // split the multi-page TIFF
+        int pages = imageReader.getNumImages(true);
+        for(int i=0; i<pages; i++) {
+            BufferedImage bufferedImage = imageReader.read(i);
+            assertValidBufferedImage(bufferedImage);
+        }
+
+        assertEquals("Expect to have 10 pages", 10, pages);
+    }
+
 }

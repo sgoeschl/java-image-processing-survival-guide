@@ -16,13 +16,21 @@
  */
 package org.github.jipsg.sanselan;
 
+import org.apache.commons.imaging.Imaging;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Load various images using Apache Commons Imaging.
@@ -132,5 +140,29 @@ public class LoadImageSanselanTest extends AbstractSanselanTest {
     @Test
     public void testLoadTiffSingleCmykCompressionLzw() throws Exception {
         assertValidBufferedImage(createBufferedImage(getImageFile("tiff", "test-single-cmyk-compression-lzw.tiff")));
+    }
+
+    /**
+     * Load a TIFF image with compression type 7 (JPEG).
+     */
+    @Ignore
+    public void testLoadTiffMultiRgbCompression7() throws Exception {
+        assertValidBufferedImage(createBufferedImage(getImageFile("tiff", "test-multi-rgb-compression-type-7.tiff")));
+    }
+
+    /**
+     * Load a multi-page TIFF image and split it into its individual pages.
+     */
+    @Test
+    public void testExtractPagesFromMultiPageTiff() throws Exception {
+
+        File sourceImageFile = getImageFile("tiff", "test-multi-gray-compression-type-4.tiff");
+
+        List<BufferedImage> bufferedImageList = Imaging.getAllBufferedImages(sourceImageFile);
+
+        for(BufferedImage bufferedImage : bufferedImageList) {
+            assertValidBufferedImage(bufferedImage);
+        }
+        assertEquals("Expect to have 2 pages", 2, bufferedImageList.size());
     }
 }
