@@ -407,6 +407,16 @@ ConvolveOp sharpeningOp = new ConvolveOp(kernel, ConvolveOp.EDGE_NO_OP, null);
 return sharpeningOp.filter(src, temp);
 ```
 
+## 6.4 Thumbnailator & GIF Images
+
+A real-estate agent complained that its pictures are of a very poor quality and the complaint was justified as shown below
+
+
+| Before                                                    | After                                                   |
+| ----------------------------------------------------------| ------------------------------------------------------- |
+| ![Alph-Channel Before](./images/house-before.gif)         | ![Alph-Channel After](./images/house-after.jpg) |
+
+
 ------------------------------------------------------------------
 # 7. Image Optimization
 

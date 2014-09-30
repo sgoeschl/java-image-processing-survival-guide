@@ -34,6 +34,7 @@ public abstract class AbstractImageTest {
     public abstract BufferedImage createBufferedImage(final File file) throws Exception;
     public abstract void writeBufferedImage(final BufferedImage bufferedImage, final String formatName, final File file) throws Exception;
     public abstract BufferedImage resample(final BufferedImage bufferedImage, int width, int height);
+    public abstract void writeBufferedImage(BufferedImage bufferedImage, float quality, int dpi, String formatName, File file) throws Exception;
 
     public void setup() {
         File currDirectory = new File("");

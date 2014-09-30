@@ -48,6 +48,11 @@ public class AbstractImageIoTest extends AbstractImageTest {
         ImageIO.write(bufferedImage, formatName, file);
     }
 
+    @Override
+    public void writeBufferedImage(BufferedImage bufferedImage, float quality, int dpi, String formatName, File file) throws Exception {
+        ImageIO.write(bufferedImage, formatName, file);
+    }
+
     /**
      * Some quick and dirty image scaling - please note that for best performance
      * and quality you should use image rescaling libraries.
