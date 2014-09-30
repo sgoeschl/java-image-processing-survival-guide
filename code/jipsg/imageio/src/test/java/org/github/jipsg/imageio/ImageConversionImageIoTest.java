@@ -70,6 +70,7 @@ public class ImageConversionImageIoTest extends AbstractImageIoTest {
         sourceImageFileList.add(getImageFile("png", "marble.png"));
         // sourceImageFileList.add(getImageFile("tiff", "marble.tiff"));
         sourceImageFileList.add(getImageFile("gif", "marble.gif"));
+        sourceImageFileList.add(getImageFile("gif", "house-photo.gif"));
 
         for(File sourceImageFile : sourceImageFileList) {
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
@@ -89,6 +90,7 @@ public class ImageConversionImageIoTest extends AbstractImageIoTest {
         sourceImageFileList.add(getImageFile("png", "marble.png"));
         // sourceImageFileList.add(getImageFile("tiff", "marble.tiff"));
         sourceImageFileList.add(getImageFile("gif", "marble.gif"));
+        sourceImageFileList.add(getImageFile("gif", "house-photo.gif"));
 
         for(File sourceImageFile : sourceImageFileList) {
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
