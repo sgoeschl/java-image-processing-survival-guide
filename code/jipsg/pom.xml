@@ -16,8 +16,8 @@
         <module>imageio</module>
         <module>jai</module>
         <module>sanselan</module>
-        <module>twelvemonkey</module>
-        <module>thumbnailator</module>
+        <module>twelvemonkeys</module>
+        <module>image-manipulation</module>
     </modules>
 
 </project>

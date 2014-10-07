@@ -17,6 +17,7 @@
 package org.github.jipsg.imageio;
 
 import org.github.jipsg.common.image.BufferedImageOperations;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,6 +28,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.*;
 import java.util.List;
+import static org.junit.Assert.*;
 
 /**
  * Load various images.
@@ -68,6 +70,7 @@ public class ImageConversionImageIoTest extends AbstractImageIoTest {
         sourceImageFileList.add(getImageFile("png", "marble.png"));
         // sourceImageFileList.add(getImageFile("tiff", "marble.tiff"));
         sourceImageFileList.add(getImageFile("gif", "marble.gif"));
+        sourceImageFileList.add(getImageFile("gif", "house-photo.gif"));
 
         for(File sourceImageFile : sourceImageFileList) {
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
@@ -87,6 +90,7 @@ public class ImageConversionImageIoTest extends AbstractImageIoTest {
         sourceImageFileList.add(getImageFile("png", "marble.png"));
         // sourceImageFileList.add(getImageFile("tiff", "marble.tiff"));
         sourceImageFileList.add(getImageFile("gif", "marble.gif"));
+        sourceImageFileList.add(getImageFile("gif", "house-photo.gif"));
 
         for(File sourceImageFile : sourceImageFileList) {
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
@@ -102,7 +106,7 @@ public class ImageConversionImageIoTest extends AbstractImageIoTest {
 
     /**
      * Convert images having a transparency layer (alpha-channel) to JPG. Without
-     * further handling the alpha-channel will be rendered black
+     * further handling the alpha-channel will be rendered black or as a red tint.
      */
     @Test
     public void testWriteTransparentImagesAsJpeg() throws Exception {
@@ -114,19 +118,24 @@ public class ImageConversionImageIoTest extends AbstractImageIoTest {
         sourceImageFileList.add(getImageFile("png", "test-image-transparent.png"));
 
         for(File sourceImageFile : sourceImageFileList) {
+
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
             assertValidBufferedImage(bufferedImage);
+            assertTrue("Expecting transparency", bufferedImage.getColorModel().hasAlpha());
+            assertTrue("Expecting non-RGB color model", bufferedImage.getType() == BufferedImage.TYPE_4BYTE_ABGR || bufferedImage.getType() == BufferedImage.TYPE_BYTE_INDEXED);
+
             File targetImageFile = createOutputFileName("testWriteTransparentImagesAsJpeg", sourceImageFile, formatName);
             writeBufferedImage(bufferedImage, formatName, targetImageFile);
         }
     }
 
     /**
-     * Convert images having a transparency layer (alpha-channel) to JPG. Fill
-     * the alpha-channel with Color.WHITE to have a useful image.
+     * Convert images having a transparency layer (alpha-channel) to JPG. Remove
+     * the alpha-channel (ARGB) by painting the image into an RGB image thereby
+     * removing the fourth channel and transparency.
      */
     @Test
-    public void testWriteTransparentImagesWithAlphaChannelHandlingAsJpeg() throws Exception {
+    public void testWriteTransparentImagesUsingRGBAsJpeg() throws Exception {
 
         String formatName = "jpeg";
         List<File> sourceImageFileList = new ArrayList<File>();
@@ -135,10 +144,22 @@ public class ImageConversionImageIoTest extends AbstractImageIoTest {
         sourceImageFileList.add(getImageFile("png", "test-image-transparent.png"));
 
         for(File sourceImageFile : sourceImageFileList) {
-            BufferedImage bufferedImage = BufferedImageOperations.fillTransparentPixel(createBufferedImage(sourceImageFile));
+
+            BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
             assertValidBufferedImage(bufferedImage);
-            File targetImageFile = createOutputFileName("testWriteTransparentImagesWithAlphaChannelHandlingAsJpeg", sourceImageFile, formatName);
-            writeBufferedImage(bufferedImage, formatName, targetImageFile);
+            assertTrue("Expecting transparency", bufferedImage.getColorModel().hasAlpha());
+            assertTrue("Expecting non-RGB color model", bufferedImage.getType() == BufferedImage.TYPE_4BYTE_ABGR || bufferedImage.getType() == BufferedImage.TYPE_BYTE_INDEXED);
+
+            BufferedImage rgbBufferedImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+            Graphics2D graphics = rgbBufferedImage.createGraphics();
+            graphics.drawImage(bufferedImage, 0, 0, null);
+            graphics.dispose();
+            assertValidBufferedImage(rgbBufferedImage);
+            assertFalse("Expecting no transparency", rgbBufferedImage.getColorModel().hasAlpha());
+            assertEquals("Expecting RGB color model", BufferedImage.TYPE_INT_RGB, rgbBufferedImage.getType());
+
+            File targetImageFile = createOutputFileName("testWriteTransparentImagesWithAwtAsJpeg", sourceImageFile, formatName);
+            writeBufferedImage(rgbBufferedImage, formatName, targetImageFile);
         }
     }
 }

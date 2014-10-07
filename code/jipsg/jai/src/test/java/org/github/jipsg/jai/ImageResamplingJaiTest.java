@@ -35,8 +35,7 @@ public class ImageResamplingJaiTest extends AbstractJaiTest {
     }
 
     /**
-     * Convert images having a transparency layer (alpha-channel) to JPG. Without
-     * further handling the alpha-channel will be rendered black
+     * Load various image types and re-sample them to 640 x 480.
      */
     @Test
     public void testResamplingImagesAsJpeg() throws Exception {
@@ -59,4 +58,21 @@ public class ImageResamplingJaiTest extends AbstractJaiTest {
             writeBufferedImage(resampledBufferedImage, formatName, targetImageFile);
         }
     }
+    @Test
+    public void testWriteImageWithQualityAndDpi() throws Exception {
+
+        File targetImageFile;
+        String formatName = "jpeg";
+
+        File sourceImageFile = getImageFile("jpg", "marble.jpg");
+        BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
+        assertValidBufferedImage(bufferedImage);
+        BufferedImage resampledBufferdImage = resample(bufferedImage, 640, 640);
+        assertValidBufferedImage(resampledBufferdImage);
+
+        // write as JPEG
+        targetImageFile = createOutputFileName("testWriteImageWithQualityAndDpi", sourceImageFile, "jpg");
+        writeBufferedImage(resampledBufferdImage, 0.10f, 123, formatName, targetImageFile);
+    }
+
 }
