@@ -16,7 +16,7 @@ In order to get the things done I used various image processing libraries with v
 * Java ImageIO (comes with the JDK)
 * Java Advanced Imaging (JAI)
 * Apache Commons Imaging (also known as Sanselan)
-* TwelveMonkey library
+* TwelveMonkeys library
 
 The problem with all of those libraries is that I had various issues and information how to solve my issues were hard to find on the internet. 
 
