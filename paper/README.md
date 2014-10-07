@@ -27,7 +27,7 @@ The heavy lifting is done by ImageMagick - a native image-processing command-lin
 
 On the other hand ImageMagick is a powerful and field-proven software used by the customer for many years in order to
 
-* Process 5 million user-uploaded images per month
+* Process 6 million user-uploaded images per month
 * Convert arbitrary image formats such as PNG, TIFF and BMP into JPEG
 * Convert PDF documents to a preview image using GhostScript under the hood
 * Create five thumbnail images with varying resolution based on the user-uploaded image
@@ -75,8 +75,7 @@ Nowadays there is a strong focus on beautiful user interfaces - a simple list of
 ```
 List<BufferedImage> pdfToImage(
     Object source, int from,
-    int to, int dpi,
-    float quality) 
+    int to, int dpi) 
 {
     PDDocument pdDocument = loadPDDocument(source);
     List<BufferedImage> result = new ArrayList<BufferedImage>();
@@ -202,7 +201,22 @@ An alpha channel stores transparency information and is used for the GIF and PNG
 | ----------------------------------------------------------| ------------------------------------------------------- |
 | ![Alph-Channel Before](./images/alpha-channel-before.png) | ![Alph-Channel After](./images/alpha-channel-after.png) |
 
-This problem is caused by ImageIO using a mismatched color model when writing the JPEG image (e.g. *BufferedImage.TYPE_4BYTE_ABGR*) and can be avoided by converting the color model to *BufferedImage.TYPE_RGB* type relying on *Graphics2D.drawImage*. Please note that this problem might also occur when applying an *AffineTransformOp* since this results in a BufferedImage having a *BufferedImage.TYPE_ARGB* type [1]. 
+This problem is caused by ImageIO using a mismatched color model when writing the JPEG image (e.g. *BufferedImage.TYPE_4BYTE_ABGR*) and can be avoided by converting the color model to *BufferedImage.TYPE_RGB* type relying on *Graphics2D.drawImage*. 
+
+```
+BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
+int width = bufferedImage.getWidth();
+int height = bufferedImage.getHeight();
+final int imageType = BufferedImage.TYPE_INT_RGB;
+
+BufferedImage rgbBufferedImage = new BufferedImage(width, height, imageType);
+Graphics2D graphics = rgbBufferedImage.createGraphics();
+graphics.drawImage(bufferedImage, 0, 0, null);
+graphics.dispose();
+```
+
+Please note that this problem might also occur when applying an *AffineTransformOp* since this results in a BufferedImage having a *BufferedImage.TYPE_ARGB* type [1]. 
+
 
 ### 4.2 Memory Usage 
 
@@ -311,17 +325,17 @@ The goal is to read everything that can be read by other software - currently no
 ------------------------------------------------------------------
 ## 6. Production Issues
 
-Unsurprisingly real life is harsh on your code and exposes dormant issues - within six months in production the following problems were encountered
+Another customer required a very similiar functionality mostly processing PDFs containing image scans. The code base was used for a couple of months by two customers each processing million of images but unsurprisingly real life is harsh on your code and exposes dormant issues. After 6 months in production the following problems were encountered
 
 * Reliance on file names
 * Segment Violation during PDF processing
+* Black Borders After Image Sharpening
 * Unsupported JPEG compression flavors
 * Unsupported TIFF compression algorithms
 
-## 6.1 File Extensions versus Content Types
+## 6.1 Reliance On File Names
 
 When uploading an image file the file name and content type of the uploaded image is passed to the server and is stored on the server's local file system. The existing code base ignored the content type and only used the file name extension to determine if the image format is supported. That's fine if all your clients use proper file names but failed sometimes for Android apps sending "image.bin". 
-
 In general there are three bits of information to determine the content type of an uploaded image
 
 * File names are brittle since they may end with ".bin" or have no extension at all
@@ -381,9 +395,9 @@ for (PDXObject embeddedObject : page.getResources().getXObjects().values()) {
 }
 ```            
 
-## 6.3 Black Borders After Sharpening
+## 6.3 Black Borders After Image Sharpening
 
-Sharpening of an image is a simple convolution operation as shown below
+Sharpening of an image is a simple convolution operation as shown below and therefore re-used for all sharpening operatins
 
 ```
 BufferedImage src;
@@ -394,11 +408,11 @@ return sharpeningOp.filter(src, temp);
 
 After some time customers started complaining about black borders around their uploaded & scaled images and initially Siegfried believed that the black border was caused by the image scaling library. Strangely enough the problem did not disappear when testing with a different library. The following link ([http://www.informit.com/articles/article.aspx?p=1013851&seqNum=5|http://www.informit.com/articles/article.aspx?p=1013851&seqNum=5]) shed some light on the problem
 
-* Convolution takes the neighbours as defined in the kernel matrix
+* Convolution takes the neighbours as defined in the kernel matrix, e.g. the point in question and its eight neighbours
 * Points located at the borders have not enough neighbours
-* Java 2D uses a black pixel in this case
+* Java 2D uses a black pixel which naturally causes a black border around the sharpened image
 
-This behaviour can be changed by using an additional paramter
+This behaviour can be changed by using an additional paramter *ConvolveOp.EDGE_NO_OP*
 
 ```
 BufferedImage src;

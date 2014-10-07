@@ -150,7 +150,10 @@ public class ImageConversionImageIoTest extends AbstractImageIoTest {
             assertTrue("Expecting transparency", bufferedImage.getColorModel().hasAlpha());
             assertTrue("Expecting non-RGB color model", bufferedImage.getType() == BufferedImage.TYPE_4BYTE_ABGR || bufferedImage.getType() == BufferedImage.TYPE_BYTE_INDEXED);
 
-            BufferedImage rgbBufferedImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+            int width = bufferedImage.getWidth();
+            int height = bufferedImage.getHeight();
+            final int imageType = BufferedImage.TYPE_INT_RGB;
+            BufferedImage rgbBufferedImage = new BufferedImage(width, height, imageType);
             Graphics2D graphics = rgbBufferedImage.createGraphics();
             graphics.drawImage(bufferedImage, 0, 0, null);
             graphics.dispose();
