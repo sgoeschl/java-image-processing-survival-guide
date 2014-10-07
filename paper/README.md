@@ -307,7 +307,7 @@ We need something better! We deserver better. :-)
 
 *** 3.0 version (current) ***
 
-* To be released "very soon" (development/pre-release versions has been in use at customer sites for 2-3 years)
+* Just released (development/pre-release versions has been in use at customer sites for 2-3 years)
 * Very much improved JPEG (read) support (CMYK handling, improved color profile handling, JFIF and EXIF support) over the standard JPEGImageReader that comes with the (Oracle) JRE. Solves most of the issues that usually crops up at StackOverflow
     * "Exception reading JPEG with colorspace X"
     * "Inconsistent metadata when reading JPEG"
@@ -513,4 +513,120 @@ TwelveMonkeys comes with a set of chainable filters that allows different conver
 - Watermarking
 - Content negotiation
 - Format conversion (any format to web format like JPEG or PNG)
+
+---------------
+
+
+### TIFF notes...
+
+TIFF: Tagged Image File Format
+
+Key strength: Extremely flexible
+
+Key weakness: Extremely flexible...
+
+TIFF: Thousands of Incompatible File Formats
+
+It's virtually impossible to support all possible combinations of TIFF.
+
+
+A TIFF can store:
+- Black and white (bilevel) images (TIFF class B)
+- Bilevel Fax data (TIFF class F) (spec!) maintained by International Telephone and Telegraph Consul- tative Committee (CCITT)
+- Gray data (TIFF class G)
+- Indexed color (palette) data (TIFF class P)
+- RGB image data (TIFF class R)
+- YCbCr data (uncompressed or in JPEG format) (TIFF class Y)
+- CMYK data ("TIFF class C")
+(more recent: Camera RAW data: TIFF/EP or DNG)
+
+A TIFF can store:
+- Single images
+- Multipage documents
+- Multiple versions (sizes) of the same image (pyramidal TIFF)
+
+- Interleaved image data
+- Planar data
+
+- In unsigned integer format
+  - In 1, 2, 4, 8, 16 or 32 bits per pixel
+- In floating point format
+
+- ICC profiles
+...
+
+A TIFF can store:
+- Uncompressed image data
+- Compressed image data in one of the following format:
+  - Modified Huffman
+  - Packbits
+  - LZW (with or without prediction)
+  - Deflate/Zip (with or without prediction)
+  - JPEG (in multiple flavors)
+  - JPEG2000
+  - JBIG
+  - JBIG2
+  ... (the list goes on and on)
+
+It's -virtually- practically impossible to support all possible combinations of TIFF!
+
+Solutions: 
+
+Agree on a general subset:
+- Baseline TIFF
+
+Define a specific subset for specific needs:
+- Exif
+- TIFF/EP and DNG
+- TIFF class F (Facsimile documents)
+
+
+TIFF was originnally developled by Aldus, now owned by Adobe.
+
+- Old format
+- No ISO or other standards body spec
+- De facto: TIFF 6.0 by Adobe + some extra ammendments
+
+Recent usage:
+- TIFF is also the basis of Exif, used in digital camera formats (JPEGs)
+- TIFF/EP and Adobe DNG (Digital Negative)
+
+Limitation:
+- Internal file lengths and offsets are recorded as 32 bit unsigned integers. 
+- Max file size 4 GB
+- BigTIFF proposal that removes this limitation, has been "in progress" for years, still no formal/approved specification.
+
+
+### JPEG Lossless notes...
+
+Contrary to popular belief, JPEG is not a file format (!).
+(It is a standardized image compression scheme).
+
+When someone says "JPEG file" most people refer to one of two main file formats that uses JPEG compression:
+
+- JFIF (JPEG Interchange File Format), the original format described by (a member of?) the expert group
+- Exif (Exchangeable image file format), used by digital cameras
+
+Strictly, these are incompatible, as both standard specifies that their APP marker must be the first APP marker in the file. But most software happily reads either as a "JPEG" as they conform to the structure defined in JIF (JPEG Interchange Format). 
+
+Large software vendors (like one that starts with a capital 'A') has their own extensions, like CMYK-encoded JPEGs and many encoders also likes to put Exif metadata inside an otherwise conforming JFIF file. 
+
+The stanadard Java JPEGImageReader on the other hand isn't always that happy with these extensions, so you might see exceptions like:
+
+> Inconsistent metadata read from stream
+
+
+Java has no good support for lossless JPEG (known as "JPEG Lossless). 
+
+(Neither has it any good suport for or JPEG LS, but that is a completely different (!) compression scheme.)
+
+Also missing is support for "Arithmetic coding" (as opposed to the default "Huffman coding").
+
+(and combinations of the above).
+
+Arithmetic coding yield a slightly better compression ratio (5-7% accoring to Wikipedia) than Huffman coding, but is far less widespread, probably due to licensing issues and also being more CPU-intensive for encoders/decoders. 
+
+Trying to decode a JPEG Lossless using the default Java JPEGImageReader results in an exception, stating:
+
+> Unsupported JPEG process: SOF type 0xcb
 

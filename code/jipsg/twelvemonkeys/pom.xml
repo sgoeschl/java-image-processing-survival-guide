@@ -4,47 +4,47 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.github.jipsg</groupId>
-    <artifactId>jipsg-twelvemonkey</artifactId>
+    <artifactId>jipsg-twelvemonkeys</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>jipsg-twelvemonkey</name>
+    <name>jipsg-twelvemonkeys</name>
     <inceptionYear>2014</inceptionYear>
-    <description>Java Image Processing Survival Guide Twelfemonkey</description>
+    <description>Java Image Processing Survival Guide Twelvemonkeys</description>
 
     <dependencies>
         <dependency>
             <groupId>com.twelvemonkeys.imageio</groupId>
             <artifactId>imageio-tiff</artifactId>
-            <version>3.0.20140131</version>
+            <version>3.0</version>
         </dependency>
         <dependency>
             <groupId>com.twelvemonkeys.imageio</groupId>
             <artifactId>imageio-jpeg</artifactId>
-            <version>3.0.20140131</version>
+            <version>3.0</version>
         </dependency>
         <dependency>
             <groupId>com.twelvemonkeys.imageio</groupId>
             <artifactId>imageio-core</artifactId>
-            <version>3.0.20140131</version>
+            <version>3.0</version>
         </dependency>
         <dependency>
             <groupId>com.twelvemonkeys.imageio</groupId>
             <artifactId>imageio-metadata</artifactId>
-            <version>3.0.20140131</version>
+            <version>3.0</version>
         </dependency>
         <dependency>
             <groupId>com.twelvemonkeys.common</groupId>
             <artifactId>common-image</artifactId>
-            <version>3.0.20140131</version>
+            <version>3.0</version>
         </dependency>
         <dependency>
             <groupId>com.twelvemonkeys.common</groupId>
             <artifactId>common-io</artifactId>
-            <version>3.0.20140131</version>
+            <version>3.0</version>
         </dependency>
         <dependency>
             <groupId>com.twelvemonkeys.common</groupId>
             <artifactId>common-lang</artifactId>
-            <version>3.0.20140131</version>
+            <version>3.0</version>
         </dependency>
         <dependency>
             <groupId>org.github.jipsg</groupId>
