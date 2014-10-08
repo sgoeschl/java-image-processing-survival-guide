@@ -39,7 +39,7 @@ import java.io.IOException;
 /**
  * Base class for testing Java ImageIO.
  */
-public class AbstractImageIoTest extends AbstractImageTest {
+public class BaseImageIoTest extends AbstractImageTest {
 
     @Override
     public void setup() {

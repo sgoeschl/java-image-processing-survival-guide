@@ -14,8 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.github.jipsg.thumbnailator;
+package org.github.jipsg.sanselan;
 
+import org.apache.commons.imaging.ImageFormat;
+import org.apache.commons.imaging.ImageFormats;
+import org.apache.commons.imaging.Imaging;
+import org.apache.commons.imaging.ImagingConstants;
+import org.apache.commons.imaging.formats.tiff.constants.TiffConstants;
 import org.github.jipsg.common.AbstractImageTest;
 import org.github.jipsg.common.image.BufferedImageUtils;
 
@@ -26,31 +31,40 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Base class for testing Java ImageIO.
+ * Base class for testing Apache Sanselan.
  */
-public class AbstractImageIoTest extends AbstractImageTest {
+public class BaseSanselanTest extends AbstractImageTest {
 
     @Override
     public void setup() {
-        super.setModuleName("imageio");
+        super.setModuleName("sanselan");
         super.setup();
     }
 
     @Override
-    public BufferedImage createBufferedImage(File file) throws IOException {
-        return ImageIO.read(file);
+    public BufferedImage createBufferedImage(File file) throws Exception {
+        final Map<String, Object> params = new HashMap<String, Object>();
+        // set optional parameters if you like
+        params.put(ImagingConstants.BUFFERED_IMAGE_FACTORY,
+                new ManagedImageBufferedImageFactory());
+        // read image
+        return Imaging.getBufferedImage(file, params);
     }
 
     @Override
-    public void writeBufferedImage(BufferedImage bufferedImage, String formatName, File file) throws Exception {
-        ImageIO.write(bufferedImage, formatName, file);
+    public void writeBufferedImage(final BufferedImage bufferedImage, final String formatName, final File file) throws Exception {
+        final ImageFormat format = getImageFormat(formatName);
+        final Map<String, Object> params = new HashMap<String, Object>();
+        Imaging.writeImage(bufferedImage, file, format, params);
     }
 
     @Override
     public void writeBufferedImage(BufferedImage bufferedImage, float quality, int dpi, String formatName, File file) throws Exception {
-        ImageIO.write(bufferedImage, formatName, file);
+        writeBufferedImage(bufferedImage, formatName, file);
     }
 
     /**
@@ -59,6 +73,7 @@ public class AbstractImageIoTest extends AbstractImageTest {
      */
     @Override
     public BufferedImage resample(BufferedImage bufferedImage, int width, int height) {
+
         Dimension imageDimension = new Dimension(bufferedImage.getWidth(), bufferedImage.getHeight());
         Dimension boundaryDimension = new Dimension(width, height);
         Dimension scaledDimension = BufferedImageUtils.getScaledDimension(imageDimension, boundaryDimension);
@@ -72,5 +87,21 @@ public class AbstractImageIoTest extends AbstractImageTest {
         return biLinearScaleOp.filter(
                 bufferedImage,
                 new BufferedImage(scaledDimension.width, scaledDimension.height, bufferedImage.getType()));
+    }
+
+    private ImageFormat getImageFormat(String formatName) {
+
+        if("jpg".equalsIgnoreCase(formatName)) {
+            return ImageFormats.JPEG;
+        }
+        else if("jpeg".equalsIgnoreCase(formatName)) {
+            return ImageFormats.JPEG;
+        }
+        else if("png".equalsIgnoreCase(formatName)) {
+            return ImageFormats.PNG;
+        }
+        else {
+            throw new IllegalArgumentException("Don't know how to handle : " + formatName);
+        }
     }
 }

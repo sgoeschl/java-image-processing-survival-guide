@@ -16,7 +16,6 @@
  */
 package org.github.jipsg.twelvemonkeys;
 
-import org.github.jipsg.common.image.BufferedImageOperations;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,7 +32,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Load various images.
  */
-public class ImageConversionTwelveMonkeysTest extends AbstractTwelveMonkeysTest {
+public class ImageConversionTwelveMonkeysTest extends BaseTwelveMonkeysTest {
 
     @Before
     public void setup() {

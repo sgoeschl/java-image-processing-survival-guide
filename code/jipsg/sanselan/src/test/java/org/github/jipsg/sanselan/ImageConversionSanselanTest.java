@@ -16,7 +16,6 @@
  */
 package org.github.jipsg.sanselan;
 
-import org.github.jipsg.common.image.BufferedImageOperations;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -35,7 +34,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Load various images.
  */
-public class ImageConversionSanselanTest extends AbstractSanselanTest {
+public class ImageConversionSanselanTest extends BaseSanselanTest {
 
     @Before
     public void setup() {

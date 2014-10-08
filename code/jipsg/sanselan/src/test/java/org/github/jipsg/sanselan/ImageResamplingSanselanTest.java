@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * Load various images.
  */
-public class ImageResamplingSanselanTest extends AbstractSanselanTest {
+public class ImageResamplingSanselanTest extends BaseSanselanTest {
 
     @Before
     public void setup() {

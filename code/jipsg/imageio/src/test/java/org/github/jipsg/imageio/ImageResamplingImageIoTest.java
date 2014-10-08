@@ -22,14 +22,13 @@ import org.junit.Test;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Load various images.
  */
-public class ImageResamplingImageIoTest extends AbstractImageIoTest {
+public class ImageResamplingImageIoTest extends BaseImageIoTest {
 
     private static final BigDecimal BD_1000 = new BigDecimal(1000);
     private static final BigDecimal CM_INCH_RATIO = new BigDecimal(0.0254);

@@ -16,8 +16,6 @@
  */
 package org.github.jipsg.imageio;
 
-import org.github.jipsg.common.image.BufferedImageOperations;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -34,7 +32,7 @@ import static org.junit.Assert.*;
 /**
  * Load various images.
  */
-public class ImageConversionImageIoTest extends AbstractImageIoTest {
+public class ImageConversionImageIoTest extends BaseImageIoTest {
 
     @Before
     public void setup() {

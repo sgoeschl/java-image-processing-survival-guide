@@ -4,7 +4,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.github.jipsg</groupId>
-    <artifactId>jipsg-image-manipulation</artifactId>
+    <artifactId>jipsg-thumbnailator</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>jipsg-thumbnailator</name>
     <inceptionYear>2014</inceptionYear>
@@ -22,6 +22,12 @@
             <artifactId>thumbnailator</artifactId>
             <version>0.4.7</version>
         </dependency>        
+        <dependency>
+            <groupId>org.github.jipsg</groupId>
+            <artifactId>jipsg-imageio</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.github.jipsg</groupId>
             <artifactId>jipsg-common</artifactId>

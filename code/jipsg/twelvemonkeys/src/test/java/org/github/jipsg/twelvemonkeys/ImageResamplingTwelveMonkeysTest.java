@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * Load various images.
  */
-public class ImageResamplingTwelveMonkeysTest extends AbstractTwelveMonkeysTest {
+public class ImageResamplingTwelveMonkeysTest extends BaseTwelveMonkeysTest {
 
     @Before
     public void setup() {
@@ -57,39 +57,4 @@ public class ImageResamplingTwelveMonkeysTest extends AbstractTwelveMonkeysTest 
             writeBufferedImage(resampledBufferdImage, formatName, targetImageFile);
         }
     }
-
-    // ======================================================================
-    // Image Scaling
-    // ======================================================================
-
-    @Test
-    public void testScaleImages() throws Exception {
-
-        final int[] SIZES = new int[] { 575, 199, 80, 60};
-        final float QUALITY = 0.8f;
-
-        File sourceImageDir = new File("../../images/willhaben");
-        File[] sourceImageFiles = sourceImageDir.listFiles();
-
-        long currentTime = System.currentTimeMillis();
-
-        for(File sourceImageFile : sourceImageFiles) {
-
-            BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
-
-            for(int size : SIZES) {
-
-                BufferedImage scaledBufferedImage = resample(bufferedImage, size, size);
-
-                bufferedImage = scaledBufferedImage;
-
-                writeBufferedImage(scaledBufferedImage, "jpeg", createOutputFileName("testScaleImages/" + size, sourceImageFile, "jpeg"));
-            }
-        }
-
-        long duration = System.currentTimeMillis() - currentTime;
-
-        System.out.println("Scaling one source image to " + SIZES.length + " previews took " + duration/sourceImageFiles.length + " ms");
-    }
-
 }

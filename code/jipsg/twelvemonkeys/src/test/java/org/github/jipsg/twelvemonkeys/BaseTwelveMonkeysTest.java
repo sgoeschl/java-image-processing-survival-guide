@@ -28,7 +28,7 @@ import java.io.File;
 /**
  * Base class for testing TwelveMonkey library.
  */
-public class AbstractTwelveMonkeysTest extends AbstractImageTest {
+public class BaseTwelveMonkeysTest extends AbstractImageTest {
 
     @Override
     public void setup() {

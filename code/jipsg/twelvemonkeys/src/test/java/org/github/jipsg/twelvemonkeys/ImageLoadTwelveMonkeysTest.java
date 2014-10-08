@@ -32,7 +32,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Load various images.
  */
-public class ImageLoadTwelveMonkeysTest extends AbstractTwelveMonkeysTest {
+public class ImageLoadTwelveMonkeysTest extends BaseTwelveMonkeysTest {
 
     @Before
     public void setup() {

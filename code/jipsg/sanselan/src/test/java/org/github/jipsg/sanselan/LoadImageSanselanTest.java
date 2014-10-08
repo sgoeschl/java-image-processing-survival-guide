@@ -21,13 +21,9 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -35,7 +31,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Load various images using Apache Commons Imaging.
  */
-public class LoadImageSanselanTest extends AbstractSanselanTest {
+public class LoadImageSanselanTest extends BaseSanselanTest {
 
     @Before
     public void setup() {

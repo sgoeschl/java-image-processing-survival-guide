@@ -18,6 +18,7 @@
         <module>sanselan</module>
         <module>twelvemonkeys</module>
         <module>image-manipulation</module>
+        <module>thumbnailator</module>
     </modules>
 
 </project>

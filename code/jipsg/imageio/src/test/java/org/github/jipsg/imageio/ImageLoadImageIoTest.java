@@ -31,7 +31,7 @@ import java.util.Set;
 /**
  * Load various images.
  */
-public class ImageLoadImageIoTest extends AbstractImageIoTest {
+public class ImageLoadImageIoTest extends BaseImageIoTest {
 
     @Before
     public void setup() {
