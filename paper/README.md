@@ -428,7 +428,7 @@ ConvolveOp sharpeningOp = new ConvolveOp(kernel, ConvolveOp.EDGE_NO_OP, null);
 return sharpeningOp.filter(src, temp);
 ```
 
-## 6.4 Thumbnailator & GIF Images
+### 6.4 Thumbnailator & GIF Images
 
 A real-estate agent complained that its pictures are of a very poor quality and the complaint was justified as shown below
 
@@ -437,6 +437,22 @@ A real-estate agent complained that its pictures are of a very poor quality and 
 | ----------------------------------------------------------| ------------------------------------------------------- |
 | ![Alph-Channel Before](./images/house-before.gif)         | ![Alph-Channel After](./images/house-after.jpg)         |
 
+
+### 6.5 PDFBox & JBIG2 Images
+
+PDF is as flexible as TIFF and allows to add a wide variety of images. One PDF document contained a JBIG2 image which as converted to list if images using PDFBox. PDFBox relies on ImageIO and could not find a matching ImageIO plugin to convert the source image into a JPEG. So it complained loudly but tried to return a JPEG nevertheless. 
+
+| PDF                                                       | JPEG                                                   |
+| ----------------------------------------------------------| ------------------------------------------------------ |
+| ![PDF](./images/pdf-jbig2-image-source.jpg)               | ![JPEG](./images/pdf-jbig2-image-result.jpg)           |
+
+This behavior is unfortunate since the caller has no way to throw an exception causing customer complaints and follow-up work.
+
+```
+ERROR JBIG2Filter  - Can't find an ImageIO plugin to decode the JBIG2 encoded datastream.
+ERROR PDPixelMap  - Something went wrong ... the pixelmap doesn't contain any data.
+WARN  PDXObjectImage  - masking getRGBImage returned NULL
+```
 
 ------------------------------------------------------------------
 ## 7. Image Optimization
