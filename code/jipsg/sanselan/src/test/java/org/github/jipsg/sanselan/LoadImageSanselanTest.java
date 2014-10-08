@@ -76,7 +76,8 @@ public class LoadImageSanselanTest extends BaseSanselanTest {
     /**
      * Plain-vanilla JPEG
      */
-    @Test(expected = org.apache.commons.imaging.ImageReadException.class)
+    @Test
+    @Ignore // org.apache.commons.imaging.ImageReadException: Invalid marker found in entropy data
     public void testLoadJPEGImage() throws Exception {
         assertValidBufferedImage(createBufferedImage(getImageFile("jpg", "test-image-rgb-01.jpg")));
     }
@@ -84,7 +85,8 @@ public class LoadImageSanselanTest extends BaseSanselanTest {
     /**
      * CMYK color model is supported.
      */
-    @Test(expected = org.apache.commons.imaging.ImageReadException.class)
+    @Test
+    @Ignore // org.apache.commons.imaging.ImageReadException: 4 components are invalid or unsupported
     public void testLoadCMYKImage() throws Exception {
         assertValidBufferedImage(createBufferedImage(getImageFile("jpg", "test-image-cmyk-uncompressed.jpg")));
     }

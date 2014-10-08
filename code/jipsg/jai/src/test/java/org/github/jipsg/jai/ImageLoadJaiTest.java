@@ -147,7 +147,6 @@ public class ImageLoadJaiTest extends AbstractJaiTest {
 
     /**
      * Load a TIFF image with compression 3.
-     * Expecting a "javax.imageio.IIOException: Unsupported TIFF Compression value: 3"
      */
     @Test
     public void testLoadTiffWithCompression3() throws Exception {

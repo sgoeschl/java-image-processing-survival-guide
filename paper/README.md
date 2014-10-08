@@ -231,7 +231,7 @@ if(imageSourceFile.length() > IMAGE_FILE_SIZE_LIMIT) {
 
 The memory foot-print mostly depends on the image dimension - the file size of an uploaded image is misleading when compression is used. This observation leads directly to notion of "decompression bomb vulnerabilities" as described at [http://www.aerasec.de/security/advisories/decompression-bomb-vulnerability.html](http://www.aerasec.de/security/advisories/decompression-bomb-vulnerability.html). A hand-crafted unicolor PNG image containing 19.000 x 19.000 pixels uses only 44 KB of disk but potentially up to 1 GB of main memory - ooups.
 
-In order to avoid such attacks the image metadata of the uploaded image file are retrieved - this is a fast operation which does not require to load the whole image file. But what are sensible limits regarding image size considering that
+In order to avoid such attacks the image metadata of the uploaded image file are retrieved - this is a fast operation which does not require to load the whole image file. The only thing missing are sensible limits regarding image size
 
 * Nikon D610 supports up to 24 mega-pixel (6016 x 4016)
 * Scanned A4 page with 300 DPI results in 35 mega-pixel (7015 x 4960)
