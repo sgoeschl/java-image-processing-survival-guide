@@ -141,7 +141,6 @@ public class ImageLoadTwelveMonkeysTest extends AbstractTwelveMonkeysTest {
      * Fails with  "ArrayIndexOutOfBoundsException"
      */
     @Test
-    @Ignore
     public void testLoadTiffGrayWithCompression2() throws Exception {
         assertValidBufferedImage(createBufferedImage(getImageFile("tiff", "test-single-gray-compression-type-2.tiff")));
     }
@@ -191,6 +190,10 @@ public class ImageLoadTwelveMonkeysTest extends AbstractTwelveMonkeysTest {
     public void testLoadTiffSingleCmykCompressionLzw() throws Exception {
         assertValidBufferedImage(createBufferedImage(getImageFile("tiff", "test-single-cmyk-compression-lzw.tiff")));
     }
+
+    // ======================================================================
+    // Multi-page TIFF extraction
+    // ======================================================================
 
     /**
      * Load a multi-page TIFF image and split it into its individual pages.

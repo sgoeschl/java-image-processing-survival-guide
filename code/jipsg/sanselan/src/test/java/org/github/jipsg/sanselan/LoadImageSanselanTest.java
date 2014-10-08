@@ -61,11 +61,11 @@ public class LoadImageSanselanTest extends AbstractSanselanTest {
 
         List<File> sourceImageFileList = new ArrayList<File>();
 
+        sourceImageFileList.add(getImageFile("gif", "marble.gif"));
         // fails with org.apache.commons.imaging.ImageReadException: Invalid marker found in entropy data
         // sourceImageFileList.add(getImageFile("jpg", "marble.jpg"));
         sourceImageFileList.add(getImageFile("png", "marble.png"));
         sourceImageFileList.add(getImageFile("tiff", "marble.tiff"));
-        sourceImageFileList.add(getImageFile("gif", "marble.gif"));
 
         for(File sourceImageFile : sourceImageFileList) {
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
@@ -149,6 +149,10 @@ public class LoadImageSanselanTest extends AbstractSanselanTest {
     public void testLoadTiffMultiRgbCompression7() throws Exception {
         assertValidBufferedImage(createBufferedImage(getImageFile("tiff", "test-multi-rgb-compression-type-7.tiff")));
     }
+
+    // ======================================================================
+    // Multi-page TIFF extraction
+    // ======================================================================
 
     /**
      * Load a multi-page TIFF image and split it into its individual pages.

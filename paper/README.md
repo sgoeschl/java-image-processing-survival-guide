@@ -37,6 +37,7 @@ Regarding the customer inquiry - somehow replacing ImageMagick looks difficult n
 
 
 ------------------------------------------------------------------
+
 ## 2. Java 2D API Primer
 
 There are a number of common tasks when working with images
@@ -232,15 +233,22 @@ The memory foot-print mostly depends on the image dimension - the file size of a
 
 In order to avoid such attacks the image metadata of the uploaded image file are retrieved - this is a fast operation which does not require to load the whole image file. But what are sensible limits regarding image size considering that
 
-* Nikon D610 supports up to 24 mega-pixel
+* Nikon D610 supports up to 24 mega-pixel (6016 x 4016)
 * Scanned A4 page with 300 DPI results in 35 mega-pixel (7015 x 4960)
 * Scanned A4 page with 600 DPI results in 140 mega-pixel (14030 x 9920)
 * Nokia Lumia 1020 uses a 42 mega-pixel sensor
 
-It was decided to use 45 mega-pixels as upper limit but this is actually a solution for the wrong problem. Instead of worrying about the dimension of uploaded images it is much smarter to scale the image on the front-end before uploading to the server conserving bandwidth and server memory.
+It was decided to use 45 mega-pixels as upper limit but this is actually a solution for the wrong problem. Instead of worrying about the dimension of uploaded images it is much smarter to scale the image on the front-end before uploading to the server conserving bandwidth and server memory. 
 
 ### 4.1 CMYK Color 
 
+```
+javax.imageio.IIOException: Unsupported Image Type
+    at com.sun.imageio.plugins.jpeg.JPEGImageReader.readInternal(JPEGImageReader.java:1063)
+    at com.sun.imageio.plugins.jpeg.JPEGImageReader.read(JPEGImageReader.java:1034)
+    at javax.imageio.ImageIO.read(ImageIO.java:1448)
+    at javax.imageio.ImageIO.read(ImageIO.java:1308)
+```    
 The CMYK color model is a subtractive color model used in color printing whereas most user-generated image uses the RGB additive color model. CMYK color space support is somewhat limited in Java, and there is no built-in CMYK color space, like it has for RGB. The main reason for this is that there is no standard CMYK color space. Unlike RGB that has standardized color profiles, like sRGB and AdobeRGB1998. CMYK color profiles originates from printer manufacturers and the printed press. Manufacturers and organizations have their own standardized profiles. 
 
 Google for CMYK to RGB will come up with various mathematical formulas. Typically something like this (from [http://www.rapidtables.com/convert/color/cmyk-to-rgb.htm](http://www.rapidtables.com/convert/color/cmyk-to-rgb.htm)):
@@ -292,8 +300,8 @@ Nowadays, the world is a little different, thus the goals have changed:
 * ImageIO (javax.imageio package) has become the standard API to read/write images in Java. 
 * Thus the goal has been to help the Java platform read as many formats, as complete as possible, using the ImageIO API.
 * JAI ImageIO has rich support for formats:
-	* However, it has bugs, and when you hit them: No-one listens. Seems to have no support from Oracle. 
-	* No official updates for the last years (last release was 2006)
+    * However, it has bugs, and when you hit them: No-one listens. Seems to have no support from Oracle. 
+    * No official updates for the last years (last release was 2006)
     * Dying community for the same reasons
     * Requires native libraries for full format support/best performance. Which means more difficult installation. And worse, no native libraries exist for many modern popular architectures (ie, 64 bit architectures)
     * License issues (http://stackoverflow.com/questions/23166231/java-advanced-imaging-license). 
@@ -380,8 +388,7 @@ j  org.apache.pdfbox.pdfviewer.PageDrawer.drawPage(Ljava/awt/Graphics;Lorg/apach
 j  org.apache.pdfbox.pdmodel.PDPage.convertToImage(II)Ljava/awt/image/BufferedImage;+310
 ```
 
-What happened - something very similiar to an image decompression bomb caused by a PDF containing a scan with 10200 x 13992 pixels. The code fails to process the PDF, the JRE crashes and the end-user is unhappy since the PDF upload fails
-
+Something very similiar to an image decompression bomb had happened - a PDF containing a scan with 10200 x 13992 pixels bombed the JVM. The native code used by Java ImageIO fails to transform the image, the JRE crashes, the end-user is unhappy since the PDF upload failed multiple times (the error message saying "The image upload failed - please try again" did not work in our favour) and the operation team has a bad day.
 
 Again an image size sanity check was added using the code snippet shown below which determines the size of embedded images.
 
@@ -428,11 +435,11 @@ A real-estate agent complained that its pictures are of a very poor quality and 
 
 | Before                                                    | After                                                   |
 | ----------------------------------------------------------| ------------------------------------------------------- |
-| ![Alph-Channel Before](./images/house-before.gif)         | ![Alph-Channel After](./images/house-after.jpg) |
+| ![Alph-Channel Before](./images/house-before.gif)         | ![Alph-Channel After](./images/house-after.jpg)         |
 
 
 ------------------------------------------------------------------
-# 7. Image Optimization
+## 7. Image Optimization
 
 Many images of the customer's site are user-uploaded photos of real estate adverts. They often have a poor quality
 
@@ -440,18 +447,94 @@ Many images of the customer's site are user-uploaded photos of real estate adver
 * Photos taken from inside an appartment often show a bright windowleaving the remaining image under-exposed
 * Photos taken from a house during bright daylight leaves the house under-exposed
 
-
-
 ------------------------------------------------------------------
-# References
+## 8. More & Advanced Topics
 
-[1] Willis Blackburn, "Saving JPEGs ImageIO Gotchas", [http://originalwhatever.blogspot.co.at/2008/08/saving-jpegs-imageio-gotchas.html](http://originalwhatever.blogspot.co.at/2008/08/saving-jpegs-imageio-gotchas.html)
+### 8.1 The JPEG File Format
 
-------------------------------------------------------------------
-# Unused Snippets
-------------------------------------------------------------------
+Contrary to popular belief, JPEG is not a file format - it is a standardized image compression scheme. When someone says "JPEG file" most people refer to one of two main file formats that uses JPEG compression:
 
-### 8.x ICC Color profiles and Color conversion
+* JFIF (JPEG Interchange File Format), the original format described by the Joint Photographic Experts Group (JPEG)
+* Exif (Exchangeable image file format), used by digital cameras
+
+Strictly, these are incompatible, as both standard specifies that their APP marker must be the first APP marker in the file. But most software happily reads either as a "JPEG" as they conform to the structure defined in JIF (JPEG Interchange Format). 
+
+Large software vendors (like one that starts with a capital 'A') have their own extensions, like CMYK-encoded JPEGs and many encoders also like to put Exif metadata inside an otherwise conforming JFIF file. 
+
+The standard Java JPEGImageReader on the other hand isn't always that happy with these extensions, so you might see exceptions like:
+
+> Inconsistent metadata read from stream
+
+Java has no good support for lossless JPEG (known as "JPEG Lossless") nor has it any good suport for or JPEG LS, but that is a completely different (!) compression scheme.
+
+Also missing is support for "Arithmetic coding" (as opposed to the default "Huffman coding").
+
+(and combinations of the above).
+
+Arithmetic coding yield a slightly better compression ratio (5-7% accoring to Wikipedia) than Huffman coding, but is far less widespread, probably due to licensing issues and also being more CPU-intensive for encoders/decoders. 
+
+Trying to decode a JPEG Lossless using the default Java JPEGImageReader results in an exception, stating:
+
+> Unsupported JPEG process: SOF type 0xcb
+
+### 8.2 TIFF
+
+TIFF stands mainly for "Thousands of Incompatible File Formats" wheras Wikipdia also mentions "Tagged Image File Format".  TIFF was originally developed by Aldus, now owned by Adobe, and is not specified by an ISO or any other standards comitee. So TIFF mainly consists of TIFF 6.0 by Adobe plus some extra ammendments.
+
+The key strength of TIFF - its flexibility based on header tags - is also it's greatest weakness (assuming that you have to process it)
+
+A TIFF can store the following image types
+
+- Black and white (bilevel) images (TIFF class B)
+- Bilevel Fax data (TIFF class F) (spec!) maintained by International Telephone and Telegraph Consul- tative Committee (CCITT)
+- Gray data (TIFF class G)
+- Indexed color (palette) data (TIFF class P)
+- RGB image data (TIFF class R)
+- YCbCr data (uncompressed or in JPEG format) (TIFF class Y)
+- CMYK data ("TIFF class C")
+- Camera RAW data: TIFF/EP or DNG
+
+In addition TIFF supports the storage of
+
+- Single images
+- Multipage documents
+- Multiple versions (sizes) of the same image (pyramidal TIFF)
+- Interleaved image data
+- Planar data
+- In unsigned integer format using 1, 2, 4, 8, 16 or 32 bits per pixel
+- In floating point format
+- ICC profiles
+
+TIFF supports the following compression formats in addition to uncompressed data
+
+- Modified Huffman
+- Packbits
+- LZW (with or without prediction)
+- Deflate/Zip (with or without prediction)
+- JPEG (in multiple flavors)
+- JPEG2000
+- JBIG
+- JBIG2
+- the list goes on and on
+
+It's virtually practically impossible to support all possible combinations of TIFF therefore the term *Baseline TIFF* was born. *Baseline TIFF* define a specific subset for specific needs such as
+
+- Exif
+- TIFF/EP and DNG
+- TIFF class F (Facsimile documents)
+
+Recent usage:
+
+- TIFF is also the basis of Exif, used in digital camera formats (JPEGs)
+- TIFF/EP and Adobe DNG (Digital Negative)
+
+Interestingly TIFF also has some limitations stemming from its age
+
+- Internal file lengths and offsets are recorded as 32 bit unsigned integers
+- Maximum file size of 4 GB
+- BigTIFF proposal that removes this limitation, has been "in progress" for years, still no formal/approved specification.
+
+### 8.3 ICC Color profiles and Color conversion
 
 As mentioned above, converting between color spaces, usually involves ICC color profiles and color transforms. Luckily for us, ICC profiles and conversion has good support in Java, although the functionality is somewhat hidden.
 
@@ -476,6 +559,16 @@ Fortunately previous behavior can be restored for now, using a special switch:
 It's probably a good idea to do so, until libraries and frameworks have been updated to work fully with LCMS or inconsistencies has been worked out. Will have to fix the library at some point. 
 
 Note that loading Custom ColorSpaces will eat memory. When loading many images at once reusing ICC profiles is a good idea. Many images contains embedded standard profiles, that will already be loaded by the JVM. But, be aware! ICC_Profile objects are mutable. It's therefore important to use these mutation operations with care, and make sure you either work on a non-shared instance or create a local copy before making changes. 
+
+
+------------------------------------------------------------------
+# References
+
+[1] Willis Blackburn, "Saving JPEGs ImageIO Gotchas", [http://originalwhatever.blogspot.co.at/2008/08/saving-jpegs-imageio-gotchas.html](http://originalwhatever.blogspot.co.at/2008/08/saving-jpegs-imageio-gotchas.html)
+
+------------------------------------------------------------------
+# Unused Snippets
+------------------------------------------------------------------
 
 ### 8.x Image Metadata
 
@@ -515,118 +608,3 @@ TwelveMonkeys comes with a set of chainable filters that allows different conver
 - Format conversion (any format to web format like JPEG or PNG)
 
 ---------------
-
-
-### TIFF notes...
-
-TIFF: Tagged Image File Format
-
-Key strength: Extremely flexible
-
-Key weakness: Extremely flexible...
-
-TIFF: Thousands of Incompatible File Formats
-
-It's virtually impossible to support all possible combinations of TIFF.
-
-
-A TIFF can store:
-- Black and white (bilevel) images (TIFF class B)
-- Bilevel Fax data (TIFF class F) (spec!) maintained by International Telephone and Telegraph Consul- tative Committee (CCITT)
-- Gray data (TIFF class G)
-- Indexed color (palette) data (TIFF class P)
-- RGB image data (TIFF class R)
-- YCbCr data (uncompressed or in JPEG format) (TIFF class Y)
-- CMYK data ("TIFF class C")
-(more recent: Camera RAW data: TIFF/EP or DNG)
-
-A TIFF can store:
-- Single images
-- Multipage documents
-- Multiple versions (sizes) of the same image (pyramidal TIFF)
-
-- Interleaved image data
-- Planar data
-
-- In unsigned integer format
-  - In 1, 2, 4, 8, 16 or 32 bits per pixel
-- In floating point format
-
-- ICC profiles
-...
-
-A TIFF can store:
-- Uncompressed image data
-- Compressed image data in one of the following format:
-  - Modified Huffman
-  - Packbits
-  - LZW (with or without prediction)
-  - Deflate/Zip (with or without prediction)
-  - JPEG (in multiple flavors)
-  - JPEG2000
-  - JBIG
-  - JBIG2
-  ... (the list goes on and on)
-
-It's -virtually- practically impossible to support all possible combinations of TIFF!
-
-Solutions: 
-
-Agree on a general subset:
-- Baseline TIFF
-
-Define a specific subset for specific needs:
-- Exif
-- TIFF/EP and DNG
-- TIFF class F (Facsimile documents)
-
-
-TIFF was originnally developled by Aldus, now owned by Adobe.
-
-- Old format
-- No ISO or other standards body spec
-- De facto: TIFF 6.0 by Adobe + some extra ammendments
-
-Recent usage:
-- TIFF is also the basis of Exif, used in digital camera formats (JPEGs)
-- TIFF/EP and Adobe DNG (Digital Negative)
-
-Limitation:
-- Internal file lengths and offsets are recorded as 32 bit unsigned integers. 
-- Max file size 4 GB
-- BigTIFF proposal that removes this limitation, has been "in progress" for years, still no formal/approved specification.
-
-
-### JPEG Lossless notes...
-
-Contrary to popular belief, JPEG is not a file format (!).
-(It is a standardized image compression scheme).
-
-When someone says "JPEG file" most people refer to one of two main file formats that uses JPEG compression:
-
-- JFIF (JPEG Interchange File Format), the original format described by (a member of?) the expert group
-- Exif (Exchangeable image file format), used by digital cameras
-
-Strictly, these are incompatible, as both standard specifies that their APP marker must be the first APP marker in the file. But most software happily reads either as a "JPEG" as they conform to the structure defined in JIF (JPEG Interchange Format). 
-
-Large software vendors (like one that starts with a capital 'A') has their own extensions, like CMYK-encoded JPEGs and many encoders also likes to put Exif metadata inside an otherwise conforming JFIF file. 
-
-The stanadard Java JPEGImageReader on the other hand isn't always that happy with these extensions, so you might see exceptions like:
-
-> Inconsistent metadata read from stream
-
-
-Java has no good support for lossless JPEG (known as "JPEG Lossless). 
-
-(Neither has it any good suport for or JPEG LS, but that is a completely different (!) compression scheme.)
-
-Also missing is support for "Arithmetic coding" (as opposed to the default "Huffman coding").
-
-(and combinations of the above).
-
-Arithmetic coding yield a slightly better compression ratio (5-7% accoring to Wikipedia) than Huffman coding, but is far less widespread, probably due to licensing issues and also being more CPU-intensive for encoders/decoders. 
-
-Trying to decode a JPEG Lossless using the default Java JPEGImageReader results in an exception, stating:
-
-> Unsupported JPEG process: SOF type 0xcb
-

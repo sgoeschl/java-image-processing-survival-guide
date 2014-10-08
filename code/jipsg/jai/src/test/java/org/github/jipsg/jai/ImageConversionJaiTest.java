@@ -19,6 +19,7 @@ package org.github.jipsg.jai;
 import org.github.jipsg.common.AbstractImageTest;
 import org.github.jipsg.common.image.BufferedImageOperations;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.imageio.ImageIO;
@@ -71,12 +72,13 @@ public class ImageConversionJaiTest extends AbstractJaiTest {
         String formatName = "jpeg";
         List<File> sourceImageFileList = new ArrayList<File>();
 
+        sourceImageFileList.add(getImageFile("bmp", "marble.bmp"));
+        sourceImageFileList.add(getImageFile("gif", "house-photo.gif"));
+        sourceImageFileList.add(getImageFile("gif", "marble.gif"));
+        sourceImageFileList.add(getImageFile("jp2", "marble.jp2"));
         sourceImageFileList.add(getImageFile("jpg", "marble.jpg"));
         sourceImageFileList.add(getImageFile("png", "marble.png"));
         sourceImageFileList.add(getImageFile("tiff", "marble.tiff"));
-        sourceImageFileList.add(getImageFile("gif", "marble.gif"));
-        sourceImageFileList.add(getImageFile("gif", "marble.gif"));
-        sourceImageFileList.add(getImageFile("gif", "house-photo.gif"));
 
         for(File sourceImageFile : sourceImageFileList) {
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
@@ -92,17 +94,44 @@ public class ImageConversionJaiTest extends AbstractJaiTest {
         String formatName = "png";
         List<File> sourceImageFileList = new ArrayList<File>();
 
+        sourceImageFileList.add(getImageFile("bmp", "marble.bmp"));
+        sourceImageFileList.add(getImageFile("gif", "house-photo.gif"));
+        sourceImageFileList.add(getImageFile("gif", "marble.gif"));
+        sourceImageFileList.add(getImageFile("jp2", "marble.jp2"));
         sourceImageFileList.add(getImageFile("jpg", "marble.jpg"));
         sourceImageFileList.add(getImageFile("png", "marble.png"));
         sourceImageFileList.add(getImageFile("tiff", "marble.tiff"));
-        sourceImageFileList.add(getImageFile("gif", "marble.gif"));
-        sourceImageFileList.add(getImageFile("gif", "house-photo.gif"));
 
         for(File sourceImageFile : sourceImageFileList) {
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
             assertValidBufferedImage(bufferedImage);
             File targetImageFile = createOutputFileName("testWriteImageFormatsAsPng", sourceImageFile, formatName);
             writeBufferedImage(bufferedImage, formatName, targetImageFile);
+        }
+    }
+
+    // ======================================================================
+    // JPEG CMYK Images
+    // ======================================================================
+
+    /**
+     * Process the JPEGs with CMYK color space and store them as JPEG again.
+     */
+    @Test
+    @Ignore // javax.imageio.IIOException: Unsupported Image Type
+    public void testProcessCMYKImages() throws Exception {
+
+        String formatName = "jpeg";
+        List<File> sourceImageFileList = new ArrayList<File>();
+
+        sourceImageFileList.add(getImageFile("jpg", "test-image-cmyk-lzw.jpg"));
+        sourceImageFileList.add(getImageFile("jpg", "test-image-cmyk-uncompressed.jpg"));
+
+        for(File sourceImageFile : sourceImageFileList) {
+            BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
+            assertValidBufferedImage(bufferedImage);
+            File targetImageFile = createOutputFileName("testProcessCMYKImages", sourceImageFile, formatName);
+            writeBufferedImage(resample(bufferedImage, 320, 320), formatName, targetImageFile);
         }
     }
 

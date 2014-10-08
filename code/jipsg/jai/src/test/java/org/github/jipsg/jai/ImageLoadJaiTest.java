@@ -104,6 +104,7 @@ public class ImageLoadJaiTest extends AbstractJaiTest {
         sourceImageFileList.add(getImageFile("png", "marble.png"));
         sourceImageFileList.add(getImageFile("tiff", "marble.tiff"));
         sourceImageFileList.add(getImageFile("gif", "marble.gif"));
+        sourceImageFileList.add(getImageFile("jp2", "marble.jp2"));
 
         for(File sourceImageFile : sourceImageFileList) {
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
@@ -184,6 +185,10 @@ public class ImageLoadJaiTest extends AbstractJaiTest {
     public void testLoadTiffMultiRgbCompression7() throws Exception {
         assertValidBufferedImage(createBufferedImage(getImageFile("tiff", "test-multi-rgb-compression-type-7.tiff")));
     }
+
+    // ======================================================================
+    // Multi-page TIFF extraction
+    // ======================================================================
 
     /**
      * Load a multi-page TIFF image and split it into its individual pages.
