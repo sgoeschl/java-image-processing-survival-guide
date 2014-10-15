@@ -1,0 +1,107 @@
+The Twelvemonkeys ImageIO project was created to solve many of the problems or similar problems to those mentioned by Sigfried.
+
+
+
+It was started when I was working for a CMS (Conntent managment system) vendor [Escenic, but we might skip mentioning names], that created CMS solutions targeted for the media insdustry (newspapers, broadcast). It's a web-centric CMS, and thus needed rich media/image support.
+The initial version was created, because we (the web content management system I worked on at the time) needed support for more image formats. 
+
+History
+
+2005...ish
+1.x version:
+- Java (prior to J2SE  1.4) had only limitted support for reading JPEG, PNG and GIF
+- And more importantly, no official API for writing images existed.
+- The APIs that existed was based- around the java.awt.Image class, and not the more versatile BufferedImage class.
+
+- JMagick had support for many formats, but had no stream support, wich is very bad when working with web architectures. Temporary writing to disk increases the response time, and slows down overall performance. Plus the lack of binary compatibiltiy from version to version and being a nightmare to install.
+- JAI was around, but at the time reading/writing images using JAI requrired a different API. 
+- None of the libraries had proper support for PSD format (JMagick didn't support reading individual layers)
+
+The initial version had a simple read/write API, that dealt with BufferedImages. 
+
+2008..ish
+2.x version:
+Nowadays, the world is a little different, thus the goals have changed: 
+
+- ImageIO (javax.imageio package) has become the standard API to read/write images in Java. 
+- Thus the goal has been to help the Java platform read as many formats, as complete as possible, using the ImageIO API.
+- JAI ImageIO has rich support for formats:
+	- However, it has bugs, and when you hit them: No-one listens. Seems to have no support from Oracle. 
+	- No official updates for the last years (last release was ...)
+    - Dying community for the same reasons
+    - Requires native libraries for full format support/best performance. Which means more difficult installation. And worse, no native libraries exist for many modern popular architectures (ie, 64 bit architectures)
+    - License issues (http://stackoverflow.com/questions/23166231/java-advanced-imaging-license). 
+    - Some parts seems to be open source, some parts not (like the native code)
+    - Multiple, semi-overlapping forks (GitHub, Google code, private) with the same + its own license issues...
+    
+- JMagick hasn't changed much. TwelveMonkeys has wrapper readers/writers to allow users to use ImageMagicks rich format support, while using the ImageIO API. However, due to the nature of the library, it will never have the same performance or rich features.
+
+- Apache Commons Imaging has emerged from Sanselan. A quite mature library, but unfortunately has its own API. Combined with the the fact that it doesn't support all the same formats as ImageIO, this means you either have to program against multiple APIs, create your own wrappers or even your own abstraction API on top of these multiple APIs.
+
+- Conclusion: We need something better! We deserver better. :-)
+
+3.0 version (current):
+ - To be released "very soon" (development/pre-release versions has been in use at customer sites for 1-2 years)
+ - Very much improved JPEG (read) support (CMYK handling, improved color profile handling, JFIF and EXIF support) over the standard JPEGImageReader that comes with the (Oracle) JRE.
+    - Solves most of the issues that usually crops up at StackOverflow, "Exception reading JPEG with colorspace X", "Inconsistent metadata when reading JPEG" etc.
+ - Full TIFF baseline support + most de facto standards + many popular extensions (read-only for now)
+ - Support for CMYK color space and proper ICC profile based CMYK to RGB conversion support throughout the project
+
+3.1 [this is all unofficial and its perhaps becoming too much "commercial"-like, so I'm fine with skipping this part]:
+ - CMYK JPEG write support, better JPEG metadata support
+ - TIFF write support, TIFF metadata support
+ - PNM read/write, metadata support
+ - CR2 support (limited read, thumbnail), TIFF/EXIF metadata
+
+
+
+
+
+TwevelMonkeys JPEG plug-in in aprticular: 
+ Goal: Read everything that can be read by other software*. 
+ 
+ Currently, not doing too bad. 
+ - However, because the base JPEG decoding is done by the same JNI code that the standard Java JPEGImageReader uses, we only support Huffman encoded, lossy JPEG, either baseline or progressive (ie, no Arithmetic encoding, no lossless compression). I guess this covers around 90% of all JPEGs in the known universe. 
+ 
+ *) Other software here, typically means libJPEG, but also Adobe Photoshop and others. 
+ 
+ 
+ - Memory mapped buffers, can they be used of anyting?
+ 
+  
+ 
+ Some thoughts and questions I have no answer for (and might be off-topic :-):
+ - What about the future of Java and JavaFX?
+ - JavaFX has its own Image class, can be converted from BufferedImage using some Swing/FX brigde utilities, but costly... Seems to be no direct replacement for ImageIO in the JavaFX world. Do we have to start from scratch? Again?
+
+
+Of course not: FX-IIO project started on GitHub. Acts as a bridge to allow creating BufferedImages backed by native JavaFX Image/WritableImage.
+ 
+ 
+ Future development:
+  - Mostly done:
+    - PNM format (PBM, PGM, PPM and PAM)
+      - Read + write + metadata
+    - PCX, TGA and SGI formats
+      - Read-only support + metadata
+ 
+  - Work in progress: More complete TIFF image read and write support
+    - Read support for FAX compressions (CCITT T4 and T6)
+    - Write support
+      - LZW compression as well as all baseline compressions
+      - JPEG (Compresssion: 7, aka New-style JPEG)
+      - Tiles/Strips
+    - Metadata
+  
+  - Work in progress: Camera RAW support
+   - TIFF/EP + DNG support (Adobe Digital Negative)
+   - NEF support (Nikon Electronic File)
+   - CR2 support (Cannon RAW file)
+   - Currently able to extract all non-compressed and lossy JPEG data previews + thumbnails
+   (Actually easier than I thought, as all camera RAW formats are Exif-based, meaning they are basically a TIFF structure)
+   
+ - Work in progress: Pure Java JPEG lossless + arithmetic decoder (+encoder?)
+   - Needed for Camera RAW plugins
+   - Most RAW files uses lossless JPEG encoding
+   
+   
