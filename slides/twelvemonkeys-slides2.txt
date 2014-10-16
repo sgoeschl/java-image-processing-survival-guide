@@ -91,6 +91,54 @@ About the same time, I got a request from a friend
 - When writing, resolve in same way as reading, to make sure we only write good JPEGs
 
 
+Some notes/observations:
+ - Surprisingly easy to write more plugins (especially ImageReaders) when you have already written one (especially if the one you did was TIFF :-)).
+ - You basically needs the spec and some sample images
+ - Most raster-based (not vector) image formats consists of pixels in RGB, gray or palette (indexed), layed out top/down (some bottom/up or even rotated)
+ - PNM, PCX, TGA and SGI format plugins was written in as little as 3-4 evenings!
+ - (+ a little more to fix some corner cases and meta data... ;-))
+ 
+ 
+A note about deploying ImageIO plugins as part of your web app
+
+ 
+Because the ImageIO plugin registry (the IIORegistry) is "VM global", it doesn't by default work well with servlet contexts. This is especially evident if you load plugins from the WEB-INF/lib or classes folder. Unless you add ImageIO.scanForPlugins() somewhere in your code, the plugins might never be available at all.
+
+I addition, servlet contexts dynamically loads and unloads classes (using a new class loader per context). If you restart your application, old classes will by default remain in memory forever (because the next time scanForPlugins is called, it's another ClassLoader that scans/loads classes, and thus they will be new instances in the registry). If a read is attempted using one of the remaining ("old") readers, weird exceptions (like NullPointerExceptions when accessing static final initialized fields) may occur.
+
+To work around both the discovery problem and the resource leak, it is recommended to use the IIOProviderContextListener that implements dynamic loading and unloading of ImageIO plugins for web applications.
+
+<web-app ...>
+
+...
+
+    <listener>
+        <display-name>ImageIO service provider loader/unloader</display-name>
+        <listener-class>com.twelvemonkeys.servlet.image.IIOProviderContextListener</listener-class>
+    </listener>
+
+...
+
+</web-app>
+
+ 
+Java 8 brings along one important change you should know about
+
+- The original, proprietary Kodak CMS (Color Managment System) that has been used in Java since the early days, has been replaced 
+- Now uses the open source LittleCMS (de facto CMS for most OSS software for years) by default. 
+- Widely used an maintained
+- Most users won't notice
+- Does affect ICC color profile handling (not 100% compatible)
+- Some profiles will crash/break on reading
+- Performance of ColorConvertOp drops :-(
+
+- For now (Java 8) it's possible to revert to the "old" KCMS using the switch 
+ - -Dsun.java2d.cmm=sun.java2d.cmm.kcms.KcmsServiceProvider
+ - I recommend using this switch for now, if working with images
+
+ 
+
+
 Why chose TwelveMonkeys over other software?
 
 - Uses standard ImageIO API (no need to learn loads of new API)
