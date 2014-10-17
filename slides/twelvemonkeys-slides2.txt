@@ -1,0 +1,174 @@
+TwelveMonkeys ImageIO
+
+What is it:
+
+Mainly: A collection of plug-ins for Java's ImageIO.
+- Expands the number of formats supported
+- Supports variants of formats not supported by the JRE (ie. JPEG)
+
+Also:
+- Extension for deploying ImageIO plugins in web app
+- Basic support for on-demand dynamic image processing
+
+Last but not least:
+- It's free! As in Speech and Beer. 
+- OSS project lincensed under BSD license
+
+
+Goal:
+- Make it easy to work with images in various file formats in Java.
+
+Side goals for me:
+ - Learn new stuff
+    - Color theory, ICC profiles etc
+    - Compressions and algorithms (even if I'm a little bored after writing 6-7 different RLE schemes)
+    - Computer History
+ - Meet people
+   - Like Sigfried :-)
+
+
+History pt I:
+
+The name: 
+- We were a couple of bored consultants that had worked together for years, 
+not satisfied with the company we were working for, conspiring in a dark pub...
+- Maybe we should start our own company?
+- It never happened, but at least we found a name for our fictive company:
+
+TwelveMonkeys (yes, after the movie)
+
+
+History pt II:
+
+I was working at a CMS company, creating tools to suport the workflow of online publishing.
+- Escenic, large in the media industry (newspapers, TV). As we were serving the same content in various channels (web, mobile, TV, paper, etc);
+- We needed a way to achieve on-demand re-sizing of images
+  - This is where the web/servlet part comes from
+  
+- Image editor in our editing tool, Content Studio (Swing based) 
+  - Open any file
+  - Copy/Paste, Drag/Drop
+  
+  - For weird reasons (historical) OS X clipboard data in Java is available in PICT format. However, there's no easy way to read PICT data in Java. PICT is an archaic format that uses op-codes to allow vector-graphics as well as regions of pixels. Just reading normal RGB pixel data is "quite easy". Result: One of the first plugins was the PICTImageReader
+  
+  
+ - Working with an online digital workflow, pretty much every customer had PhotoShop 
+  - Being able to open Photoshop documents was a key feature. 
+ Result: The PSDImageReader. 
+ 
+ (PS: I once found that another Java-based CMS (that was later acquired by Adobe) uses my PSD plugin. So, ironically, Adobe uses my PSD plugin for Java. :-))
+
+History pt III:
+
+Many years later I found myself working for an online bookstore.
+- Our problem was that 5-10% of the book cover images we had couldn't be properly opened and resized, even if they were in JPEG format.
+- Main problem: CMYK color model
+- Another common problem: Broken ICC profiles
+
+- The Sun/Oracle standard JPEGImageReader actually reads such files, but it can only be read using the less known readAsRaster method.
+- And you have to "manually" apply YCCK -> CMYK conversion, 
+- before doing a CMYK -> RGB conversion (or apply ICC profile) for correct colors.
+- A lot of work.
+
+Result: The first version of the JPEGImageReader
+
+About the same time, I got a request from a friend
+- I can't read this JPEG, with a common AdobeRGB ICC profile..?
+- The Java2D ColorConvertOp that is used internally in the JPEGImageReader (default JRE and ours) when reading JPEGs with embedded color profiles, threw exceptions because of bad ICC profiles. Even if Java could otherwise read them fine...
+- Result: We now hot-fix a lot of the ICC profiles upon reading
+- Numerous other fixes are applied to bad/incorrect ICC profiles, like CorbisRGB profile etc
+- Bonus: We now have an internal cache of ICC color profiles and associated Java ColorSpace objects to allow reuse, and avoid excessive memory use when dealing with ICC profiles.
+
+- With "JPEG" there are so many different possible ways to encode. 
+- In many cases, we just have to do our best, and show an image
+  - Ignore some data, if multiple JPEG segments conflict
+  - Log warnings, to alert the user
+  - Don't crash (like the JRE version does)
+  
+- Allow "inconsistent metadata" when reading
+ - It's already in the file!
+ - Let the client code/user decide what to keep 
+- When writing, resolve in same way as reading, to make sure we only write good JPEGs
+
+
+Some notes/observations:
+ - Surprisingly easy to write more plugins (especially ImageReaders) when you have already written one (especially if the one you did was TIFF :-)).
+ - You basically needs the spec and some sample images
+ - Most raster-based (not vector) image formats consists of pixels in RGB, gray or palette (indexed), layed out top/down (some bottom/up or even rotated)
+ - PNM, PCX, TGA and SGI format plugins was written in as little as 3-4 evenings!
+ - (+ a little more to fix some corner cases and meta data... ;-))
+ 
+ 
+A note about deploying ImageIO plugins as part of your web app
+
+ 
+Because the ImageIO plugin registry (the IIORegistry) is "VM global", it doesn't by default work well with servlet contexts. This is especially evident if you load plugins from the WEB-INF/lib or classes folder. Unless you add ImageIO.scanForPlugins() somewhere in your code, the plugins might never be available at all.
+
+I addition, servlet contexts dynamically loads and unloads classes (using a new class loader per context). If you restart your application, old classes will by default remain in memory forever (because the next time scanForPlugins is called, it's another ClassLoader that scans/loads classes, and thus they will be new instances in the registry). If a read is attempted using one of the remaining ("old") readers, weird exceptions (like NullPointerExceptions when accessing static final initialized fields) may occur.
+
+To work around both the discovery problem and the resource leak, it is recommended to use the IIOProviderContextListener that implements dynamic loading and unloading of ImageIO plugins for web applications.
+
+<web-app ...>
+
+...
+
+    <listener>
+        <display-name>ImageIO service provider loader/unloader</display-name>
+        <listener-class>com.twelvemonkeys.servlet.image.IIOProviderContextListener</listener-class>
+    </listener>
+
+...
+
+</web-app>
+
+ 
+Java 8 brings along one important change you should know about
+
+- The original, proprietary Kodak CMS (Color Managment System) that has been used in Java since the early days, has been replaced 
+- Now uses the open source LittleCMS (de facto CMS for most OSS software for years) by default. 
+- Widely used an maintained
+- Most users won't notice
+- Does affect ICC color profile handling (not 100% compatible)
+- Some profiles will crash/break on reading
+- Performance of ColorConvertOp drops :-(
+
+- For now (Java 8) it's possible to revert to the "old" KCMS using the switch 
+ - -Dsun.java2d.cmm=sun.java2d.cmm.kcms.KcmsServiceProvider
+ - I recommend using this switch for now, if working with images
+
+ 
+
+
+Why chose TwelveMonkeys over other software?
+
+- Uses standard ImageIO API (no need to learn loads of new API)
+- Actively maintained
+- Large (and groving) user base
+- No native code
+- Open source with liberal license (BSD)
+
+Why not? 
+
+- JAI ImageIO plugins still has better 
+  - Metadata and TIFF support
+  - Lossless JPEG and JPEG-LS (using native library)
+
+- Commons Imaging (Sanselan) probably has better TIFF support (Fax compressions)
+
+
+
+Future/current work in progress:
+- TIFF: 
+  - metadata
+  - write support
+
+- JPEG:
+  - Lossless JPEG
+  - Arithmetic coding
+  - CMYK write support
+
+- Camera RAW plugins
+  - CR2 (Cannon)
+  - NEF (Nikon)
+  - TIFF/EP and DNG (ISO/Adobe)
+(all TIFF/Exif derivates, so depends heavily on TIFF reading code + JPEG Lossless)
