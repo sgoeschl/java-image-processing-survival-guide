@@ -138,7 +138,7 @@ If you have ever wanted to rescale images or create thumbnails you have probably
 *BufferImageOps* and *AffineTransforms*
 * There's always a trade between speed and image quality implemented by different image scaling algorithm - *Bicubic Interpolation*, *Bilinear interpolation*, *Nearest Neighbor Interpolation* or *Lanczos Resampling*
 
-Which one are you suppose to use? Which one performs the fastest? Which one scales and uses the least amount of memory? When searching the Internet you find a plethora of image scaling libraries - in order to make an informed decision a test driver was implemented to convert a fixed set of test images using the following libraries
+Which one are you supposed to use? Which one performs the fastest? Which one scales and uses the least amount of memory? When searching the Internet you find a plethora of image scaling libraries - in order to make an informed decision a test driver was implemented to convert a fixed set of test images using the following libraries
 
 * imgscalr (see http://www.thebuzzmedia.com/software/imgscalr-java-image-scaling-library/)
 * thumbnailator (see https://code.google.com/p/thumbnailator/) 
