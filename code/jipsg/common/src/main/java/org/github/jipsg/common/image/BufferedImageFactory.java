@@ -34,6 +34,13 @@ public class BufferedImageFactory {
             File sourceFile = (File) source;
             result = ImageIO.read(sourceFile);
         }
+        else if(source instanceof String) {
+            File sourceFile = new File(source.toString());
+            result = ImageIO.read(sourceFile);
+        }
+        else {
+            throw new IllegalArgumentException("Don't know how to handle : " + source.getClass().getName());
+        }
 
         return result;
     }

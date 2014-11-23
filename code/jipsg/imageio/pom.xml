@@ -15,7 +15,6 @@
             <groupId>org.github.jipsg</groupId>
             <artifactId>jipsg-common</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 

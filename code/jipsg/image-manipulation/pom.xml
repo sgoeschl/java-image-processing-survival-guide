@@ -6,9 +6,9 @@
     <groupId>org.github.jipsg</groupId>
     <artifactId>jipsg-image-manipulation</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>jipsg-thumbnailator</name>
+    <name>jipsg-image-manipulation</name>
     <inceptionYear>2014</inceptionYear>
-    <description>Java Image Processing Survival Guide Thumbnailator</description>
+    <description>Java Image Manipulation</description>
 
     <dependencies>
         <dependency>
@@ -18,15 +18,9 @@
             <scope>compile</scope>
         </dependency>        
         <dependency>
-            <groupId>net.coobird</groupId>
-            <artifactId>thumbnailator</artifactId>
-            <version>0.4.7</version>
-        </dependency>        
-        <dependency>
             <groupId>org.github.jipsg</groupId>
-            <artifactId>jipsg-common</artifactId>
+            <artifactId>jipsg-imageio</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 

@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.github.jipsg.thumbnailator;
+package org.github.jipsg.image.manipulation;
 
 import org.github.jipsg.common.AbstractImageTest;
 import org.github.jipsg.common.image.BufferedImageUtils;

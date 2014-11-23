@@ -1,4 +1,4 @@
-package org.github.jipsg.thumbnailator;
+package org.github.jipsg.image.filter;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -7,7 +7,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.ColorModel;
 import java.util.Arrays;
-import java.util.Map;
 /**
  * Copy & pasted from https://code.google.com/p/jalbum-autocorrect/source/browse/AutoCorrection/src/net/jalbum/filters/auto/AutoCorrectionFilter.java
  */
