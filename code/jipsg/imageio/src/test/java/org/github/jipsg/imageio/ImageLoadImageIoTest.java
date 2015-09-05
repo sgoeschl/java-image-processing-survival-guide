@@ -28,6 +28,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * Load various images.
  */
@@ -185,5 +187,16 @@ public class ImageLoadImageIoTest extends BaseImageIoTest {
     @Ignore
     public void testLoadTiffSingleCmykCompressionLzw() throws Exception {
         assertValidBufferedImage(createBufferedImage(getImageFile("tiff", "test-single-cmyk-compression-lzw.tiff")));
+    }
+
+    // ======================================================================
+    // Decompression Bobs
+    // ======================================================================
+
+    @Test
+    public void testLoadTImage() throws Exception {
+        BufferedImage bufferedImage = createBufferedImage(getImageFile("bombs", "picture-1G-19000x19000.png"));
+        assertEquals(19000, bufferedImage.getHeight());
+        assertEquals(19000, bufferedImage.getWidth());
     }
 }
