@@ -16,16 +16,20 @@
  */
 package org.github.jipsg.twelvemonkeys;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.util.*;
+
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
@@ -150,7 +154,6 @@ public class ImageLoadTwelveMonkeysTest extends BaseTwelveMonkeysTest {
      * Fails with "javax.imageio.IIOException: Unsupported TIFF Compression value: 3"
      */
     @Test
-    @Ignore
     public void testLoadTiffWithCompression3() throws Exception {
         assertValidBufferedImage(createBufferedImage(getImageFile("tiff", "test-single-gray-compression-type-3.tiff")));
     }
@@ -160,7 +163,6 @@ public class ImageLoadTwelveMonkeysTest extends BaseTwelveMonkeysTest {
      * Fails with "javax.imageio.IIOException: Unsupported TIFF Compression value: 4"
      */
     @Test
-    @Ignore
     public void testLoadTiffWithCompression4() throws Exception {
         assertValidBufferedImage(createBufferedImage(getImageFile("tiff", "test-single-gray-compression-type-4.tiff")));
     }
@@ -170,7 +172,6 @@ public class ImageLoadTwelveMonkeysTest extends BaseTwelveMonkeysTest {
      * Fails with a "javax.imageio.IIOException: Unsupported TIFF Compression value: 4"
      */
     @Test
-    @Ignore
     public void testLoadTiffMultiPageGray() throws Exception {
         assertValidBufferedImage(createBufferedImage(getImageFile("tiff", "test-multi-gray-compression-type-4.tiff")));
     }
