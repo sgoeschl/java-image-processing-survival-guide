@@ -28,7 +28,6 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -199,7 +198,6 @@ public class ImageLoadTwelveMonkeysTest extends BaseTwelveMonkeysTest {
     /**
      * Load a multi-page TIFF image and split it into its individual pages.
      */
-    @Ignore
     public void testExtractPagesFromMultiPageTiffCompression4() throws Exception {
 
         File sourceImageFile = getImageFile("tiff", "test-multi-gray-compression-type-4.tiff");
