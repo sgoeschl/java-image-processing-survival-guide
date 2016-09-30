@@ -40,7 +40,7 @@ public class LoadImageSanselanTest extends BaseSanselanTest {
 
     /**
      * List available image formats.
-     * <p/>
+     * <p>
      * see http://examples.javacodegeeks.com/desktop-java/imageio/list-read-write-supported-image-formats/
      */
     @Test
@@ -63,7 +63,7 @@ public class LoadImageSanselanTest extends BaseSanselanTest {
         sourceImageFileList.add(getImageFile("png", "marble.png"));
         sourceImageFileList.add(getImageFile("tiff", "marble.tiff"));
 
-        for(File sourceImageFile : sourceImageFileList) {
+        for (File sourceImageFile : sourceImageFileList) {
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
             assertValidBufferedImage(bufferedImage);
         }
@@ -162,7 +162,7 @@ public class LoadImageSanselanTest extends BaseSanselanTest {
 
         List<BufferedImage> bufferedImageList = Imaging.getAllBufferedImages(sourceImageFile);
 
-        for(BufferedImage bufferedImage : bufferedImageList) {
+        for (BufferedImage bufferedImage : bufferedImageList) {
             assertValidBufferedImage(bufferedImage);
         }
         assertEquals("Expect to have 2 pages", 2, bufferedImageList.size());

@@ -19,7 +19,7 @@ package org.github.jipsg.twelvemonkeys;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.awt.*;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ public class ImageConversionTwelveMonkeysTest extends BaseTwelveMonkeysTest {
         sourceImageFileList.add(getImageFile("png", "marble.png"));
         sourceImageFileList.add(getImageFile("tiff", "marble.tiff"));
 
-        for(File sourceImageFile : sourceImageFileList) {
+        for (File sourceImageFile : sourceImageFileList) {
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
             assertValidBufferedImage(bufferedImage);
             File targetImageFile = createOutputFileName("testImageWriteAsJpeg", sourceImageFile, formatName);
@@ -79,7 +79,7 @@ public class ImageConversionTwelveMonkeysTest extends BaseTwelveMonkeysTest {
         sourceImageFileList.add(getImageFile("png", "marble.png"));
         sourceImageFileList.add(getImageFile("tiff", "marble.tiff"));
 
-        for(File sourceImageFile : sourceImageFileList) {
+        for (File sourceImageFile : sourceImageFileList) {
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
             assertValidBufferedImage(bufferedImage);
             File targetImageFile = createOutputFileName("testImageWriteAsPng", sourceImageFile, formatName);
@@ -103,7 +103,7 @@ public class ImageConversionTwelveMonkeysTest extends BaseTwelveMonkeysTest {
         sourceImageFileList.add(getImageFile("jpg", "test-image-cmyk-lzw.jpg"));
         sourceImageFileList.add(getImageFile("jpg", "test-image-cmyk-uncompressed.jpg"));
 
-        for(File sourceImageFile : sourceImageFileList) {
+        for (File sourceImageFile : sourceImageFileList) {
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
             assertValidBufferedImage(bufferedImage);
             File targetImageFile = createOutputFileName("testProcessCMYKImages", sourceImageFile, formatName);
@@ -128,7 +128,7 @@ public class ImageConversionTwelveMonkeysTest extends BaseTwelveMonkeysTest {
         sourceImageFileList.add(getImageFile("gif", "test-image-transparent.gif"));
         sourceImageFileList.add(getImageFile("png", "test-image-transparent.png"));
 
-        for(File sourceImageFile : sourceImageFileList) {
+        for (File sourceImageFile : sourceImageFileList) {
 
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
             assertValidBufferedImage(bufferedImage);
@@ -155,7 +155,7 @@ public class ImageConversionTwelveMonkeysTest extends BaseTwelveMonkeysTest {
         sourceImageFileList.add(getImageFile("gif", "test-image-transparent.gif"));
         sourceImageFileList.add(getImageFile("png", "test-image-transparent.png"));
 
-        for(File sourceImageFile : sourceImageFileList) {
+        for (File sourceImageFile : sourceImageFileList) {
 
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
             assertValidBufferedImage(bufferedImage);

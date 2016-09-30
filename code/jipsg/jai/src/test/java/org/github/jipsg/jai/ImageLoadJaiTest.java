@@ -25,8 +25,13 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.*;
-import static org.junit.Assert.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
 
 
 /**
@@ -106,7 +111,7 @@ public class ImageLoadJaiTest extends AbstractJaiTest {
         sourceImageFileList.add(getImageFile("gif", "marble.gif"));
         sourceImageFileList.add(getImageFile("jp2", "marble.jp2"));
 
-        for(File sourceImageFile : sourceImageFileList) {
+        for (File sourceImageFile : sourceImageFileList) {
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
             assertValidBufferedImage(bufferedImage);
         }
@@ -205,7 +210,7 @@ public class ImageLoadJaiTest extends AbstractJaiTest {
 
         // split the multi-page TIFF
         int pages = imageReader.getNumImages(true);
-        for(int i=0; i<pages; i++) {
+        for (int i = 0; i < pages; i++) {
             BufferedImage bufferedImage = imageReader.read(i);
             assertValidBufferedImage(bufferedImage);
         }
@@ -229,7 +234,7 @@ public class ImageLoadJaiTest extends AbstractJaiTest {
 
         // split the multi-page TIFF
         int pages = imageReader.getNumImages(true);
-        for(int i=0; i<pages; i++) {
+        for (int i = 0; i < pages; i++) {
             BufferedImage bufferedImage = imageReader.read(i);
             assertValidBufferedImage(bufferedImage);
         }

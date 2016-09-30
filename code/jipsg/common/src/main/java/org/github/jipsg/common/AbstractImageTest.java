@@ -32,35 +32,34 @@ public abstract class AbstractImageTest {
     private File imageDirectory;
 
     public abstract BufferedImage createBufferedImage(final File file) throws Exception;
+
     public abstract void writeBufferedImage(final BufferedImage bufferedImage, final String formatName, final File file) throws Exception;
+
     public abstract BufferedImage resample(final BufferedImage bufferedImage, int width, int height);
+
     public abstract void writeBufferedImage(BufferedImage bufferedImage, float quality, int dpi, String formatName, File file) throws Exception;
 
     public void setup() {
         File currDirectory = new File("");
-        if(currDirectory.getAbsolutePath().endsWith("jipsg")) {
+        if (currDirectory.getAbsolutePath().endsWith("jipsg")) {
             this.imageDirectory = new File("../images");
-        }
-        else {
+        } else {
             this.imageDirectory = new File("../../images");
         }
     }
 
-    private File getImageDirectory() {
-        return imageDirectory;
-    }
-
-    public void setModuleName(String moduleName) {
+    protected void setModuleName(String moduleName) {
         this.moduleName = moduleName;
     }
 
     /**
      * Get the given file.
+     *
      * @param folderName Name of the folder under "images"
      * @param fileName File name
      * @return the file
      */
-    public File getImageFile(String folderName, String fileName) throws IOException {
+    protected File getImageFile(String folderName, String fileName) throws IOException {
         File folderFile = new File(getImageDirectory(), folderName);
         File result = new File(folderFile, fileName);
         if (!result.exists() || !result.canRead()) {
@@ -72,24 +71,28 @@ public abstract class AbstractImageTest {
     /**
      * Some dumb sanity check that we have a valid buffered image.
      */
-    public void assertValidBufferedImage(BufferedImage bufferedImage) {
+    protected void assertValidBufferedImage(BufferedImage bufferedImage) {
         assertNotNull("bufferedImage is null", bufferedImage);
         assertTrue(bufferedImage.getHeight() > 0);
         assertTrue(bufferedImage.getWidth() > 0);
     }
 
-    public File createOutputFileName(String directory, File file, String format) {
+    protected File createOutputFileName(String directory, File file, String format) {
         return createOutputFileName(directory, file.getName(), format);
     }
 
-    public File createOutputFileName(String directory, String fileName, String format) {
+    protected File createOutputFileName(String directory, String fileName, String format) {
 
         File outputDir = new File(new File(new File(new File("./target"), "out"), directory), this.moduleName);
 
-        if(!outputDir.exists()) {
+        if (!outputDir.exists()) {
             outputDir.mkdirs();
         }
 
         return new File(outputDir, fileName + "." + format);
+    }
+
+    private File getImageDirectory() {
+        return imageDirectory;
     }
 }

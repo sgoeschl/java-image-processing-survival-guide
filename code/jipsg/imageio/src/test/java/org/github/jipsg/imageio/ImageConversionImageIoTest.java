@@ -22,12 +22,16 @@ import org.junit.Test;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriter;
-import java.awt.*;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Load various images.
@@ -45,9 +49,9 @@ public class ImageConversionImageIoTest extends BaseImageIoTest {
 
     private ImageWriter getImageWriter(String formatName) {
         Iterator<ImageWriter> imageWriterIterator = ImageIO.getImageWritersByFormatName(formatName);
-        while(imageWriterIterator.hasNext()) {
+        while (imageWriterIterator.hasNext()) {
             ImageWriter imageWriter = imageWriterIterator.next();
-            if("com.sun.imageio.plugins.jpeg.JPEGImageWriter".equals(imageWriter.getClass().getName())) {
+            if ("com.sun.imageio.plugins.jpeg.JPEGImageWriter".equals(imageWriter.getClass().getName())) {
                 return imageWriter;
             }
         }
@@ -73,7 +77,7 @@ public class ImageConversionImageIoTest extends BaseImageIoTest {
         sourceImageFileList.add(getImageFile("png", "marble.png"));
         // sourceImageFileList.add(getImageFile("tiff", "marble.tiff"));
 
-        for(File sourceImageFile : sourceImageFileList) {
+        for (File sourceImageFile : sourceImageFileList) {
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
             assertValidBufferedImage(bufferedImage);
             File targetImageFile = createOutputFileName("testWriteImageFormatsAsJpeg", sourceImageFile, formatName);
@@ -93,7 +97,7 @@ public class ImageConversionImageIoTest extends BaseImageIoTest {
         sourceImageFileList.add(getImageFile("gif", "marble.gif"));
         sourceImageFileList.add(getImageFile("gif", "house-photo.gif"));
 
-        for(File sourceImageFile : sourceImageFileList) {
+        for (File sourceImageFile : sourceImageFileList) {
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
             assertValidBufferedImage(bufferedImage);
             File targetImageFile = createOutputFileName("testWriteImageFormatsAsPng", sourceImageFile, formatName);
@@ -118,7 +122,7 @@ public class ImageConversionImageIoTest extends BaseImageIoTest {
         sourceImageFileList.add(getImageFile("jpg", "test-image-cmyk-lzw.jpg"));
         sourceImageFileList.add(getImageFile("jpg", "test-image-cmyk-uncompressed.jpg"));
 
-        for(File sourceImageFile : sourceImageFileList) {
+        for (File sourceImageFile : sourceImageFileList) {
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
             assertValidBufferedImage(bufferedImage);
             File targetImageFile = createOutputFileName("testProcessCMYKImages", sourceImageFile, formatName);
@@ -143,7 +147,7 @@ public class ImageConversionImageIoTest extends BaseImageIoTest {
         sourceImageFileList.add(getImageFile("gif", "test-image-transparent.gif"));
         sourceImageFileList.add(getImageFile("png", "test-image-transparent.png"));
 
-        for(File sourceImageFile : sourceImageFileList) {
+        for (File sourceImageFile : sourceImageFileList) {
 
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
             assertValidBufferedImage(bufferedImage);
@@ -169,7 +173,7 @@ public class ImageConversionImageIoTest extends BaseImageIoTest {
         sourceImageFileList.add(getImageFile("gif", "test-image-transparent.gif"));
         sourceImageFileList.add(getImageFile("png", "test-image-transparent.png"));
 
-        for(File sourceImageFile : sourceImageFileList) {
+        for (File sourceImageFile : sourceImageFileList) {
 
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
             assertValidBufferedImage(bufferedImage);

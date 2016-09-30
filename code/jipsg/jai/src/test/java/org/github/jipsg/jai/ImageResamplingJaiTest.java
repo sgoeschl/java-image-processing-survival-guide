@@ -49,7 +49,7 @@ public class ImageResamplingJaiTest extends AbstractJaiTest {
         // sourceImageFileList.add(getImageFile("tiff", "marble.tiff"));
         sourceImageFileList.add(getImageFile("gif", "marble.gif"));
 
-        for(File sourceImageFile : sourceImageFileList) {
+        for (File sourceImageFile : sourceImageFileList) {
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
             assertValidBufferedImage(bufferedImage);
             BufferedImage resampledBufferedImage = resample(bufferedImage, 640, 480);
@@ -58,6 +58,7 @@ public class ImageResamplingJaiTest extends AbstractJaiTest {
             writeBufferedImage(resampledBufferedImage, formatName, targetImageFile);
         }
     }
+
     @Test
     public void testWriteImageWithQualityAndDpi() throws Exception {
 

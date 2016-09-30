@@ -20,17 +20,14 @@ import org.apache.commons.imaging.ImageFormat;
 import org.apache.commons.imaging.ImageFormats;
 import org.apache.commons.imaging.Imaging;
 import org.apache.commons.imaging.ImagingConstants;
-import org.apache.commons.imaging.formats.tiff.constants.TiffConstants;
 import org.github.jipsg.common.AbstractImageTest;
 import org.github.jipsg.common.image.BufferedImageUtils;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Dimension;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -78,8 +75,8 @@ public class BaseSanselanTest extends AbstractImageTest {
         Dimension boundaryDimension = new Dimension(width, height);
         Dimension scaledDimension = BufferedImageUtils.getScaledDimension(imageDimension, boundaryDimension);
 
-        double scaleX = scaledDimension.getWidth()/bufferedImage.getWidth();
-        double scaleY = scaledDimension.getHeight()/bufferedImage.getHeight();
+        double scaleX = scaledDimension.getWidth() / bufferedImage.getWidth();
+        double scaleY = scaledDimension.getHeight() / bufferedImage.getHeight();
 
         AffineTransform scaleTransform = AffineTransform.getScaleInstance(scaleX, scaleY);
         AffineTransformOp biLinearScaleOp = new AffineTransformOp(scaleTransform, AffineTransformOp.TYPE_BILINEAR);
@@ -91,16 +88,13 @@ public class BaseSanselanTest extends AbstractImageTest {
 
     private ImageFormat getImageFormat(String formatName) {
 
-        if("jpg".equalsIgnoreCase(formatName)) {
+        if ("jpg".equalsIgnoreCase(formatName)) {
             return ImageFormats.JPEG;
-        }
-        else if("jpeg".equalsIgnoreCase(formatName)) {
+        } else if ("jpeg".equalsIgnoreCase(formatName)) {
             return ImageFormats.JPEG;
-        }
-        else if("png".equalsIgnoreCase(formatName)) {
+        } else if ("png".equalsIgnoreCase(formatName)) {
             return ImageFormats.PNG;
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("Don't know how to handle : " + formatName);
         }
     }

@@ -28,7 +28,7 @@ import javax.imageio.ImageWriteParam;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
 import javax.imageio.stream.ImageOutputStream;
-import java.awt.*;
+import java.awt.Dimension;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -67,7 +67,6 @@ public class BaseImageIoTest extends AbstractImageTest {
             IIOMetadata metadata = imageWriter.getDefaultImageMetadata(typeSpecifier, writeParam);
 
             if (formatName.equalsIgnoreCase("jpg") || formatName.equalsIgnoreCase("jpeg")) {
-
                 Element tree = (Element) metadata.getAsTree("javax_imageio_jpeg_image_1.0");
                 Element jfif = (Element) tree.getElementsByTagName("app0JFIF").item(0);
                 jfif.setAttribute("Xdensity", Integer.toString(dpi));
@@ -77,11 +76,9 @@ public class BaseImageIoTest extends AbstractImageTest {
             }
 
             if (quality >= 0 && quality <= 1f) {
-
                 JPEGImageWriteParam jpegParams = (JPEGImageWriteParam) imageWriter.getDefaultWriteParam();
                 jpegParams.setCompressionMode(JPEGImageWriteParam.MODE_EXPLICIT);
                 jpegParams.setCompressionQuality(quality);
-
             }
 
             FileOutputStream os = new FileOutputStream(targetFile);

@@ -16,15 +16,13 @@
  */
 package org.github.jipsg.jai;
 
-import org.github.jipsg.common.AbstractImageTest;
-import org.github.jipsg.common.image.BufferedImageOperations;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriter;
-import java.awt.*;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
@@ -52,9 +50,9 @@ public class ImageConversionJaiTest extends AbstractJaiTest {
 
     private ImageWriter getImageWriter(String formatName) {
         Iterator<ImageWriter> imageWriterIterator = ImageIO.getImageWritersByFormatName(formatName);
-        while(imageWriterIterator.hasNext()) {
+        while (imageWriterIterator.hasNext()) {
             ImageWriter imageWriter = imageWriterIterator.next();
-            if("com.sun.imageio.plugins.jpeg.JPEGImageWriter".equals(imageWriter.getClass().getName())) {
+            if ("com.sun.imageio.plugins.jpeg.JPEGImageWriter".equals(imageWriter.getClass().getName())) {
                 return imageWriter;
             }
         }
@@ -80,7 +78,7 @@ public class ImageConversionJaiTest extends AbstractJaiTest {
         sourceImageFileList.add(getImageFile("png", "marble.png"));
         sourceImageFileList.add(getImageFile("tiff", "marble.tiff"));
 
-        for(File sourceImageFile : sourceImageFileList) {
+        for (File sourceImageFile : sourceImageFileList) {
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
             assertValidBufferedImage(bufferedImage);
             File targetImageFile = createOutputFileName("testWriteImageFormatsAsJpeg", sourceImageFile, formatName);
@@ -102,7 +100,7 @@ public class ImageConversionJaiTest extends AbstractJaiTest {
         sourceImageFileList.add(getImageFile("png", "marble.png"));
         sourceImageFileList.add(getImageFile("tiff", "marble.tiff"));
 
-        for(File sourceImageFile : sourceImageFileList) {
+        for (File sourceImageFile : sourceImageFileList) {
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
             assertValidBufferedImage(bufferedImage);
             File targetImageFile = createOutputFileName("testWriteImageFormatsAsPng", sourceImageFile, formatName);
@@ -127,7 +125,7 @@ public class ImageConversionJaiTest extends AbstractJaiTest {
         sourceImageFileList.add(getImageFile("jpg", "test-image-cmyk-lzw.jpg"));
         sourceImageFileList.add(getImageFile("jpg", "test-image-cmyk-uncompressed.jpg"));
 
-        for(File sourceImageFile : sourceImageFileList) {
+        for (File sourceImageFile : sourceImageFileList) {
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
             assertValidBufferedImage(bufferedImage);
             File targetImageFile = createOutputFileName("testProcessCMYKImages", sourceImageFile, formatName);
@@ -152,7 +150,7 @@ public class ImageConversionJaiTest extends AbstractJaiTest {
         sourceImageFileList.add(getImageFile("gif", "test-image-transparent.gif"));
         sourceImageFileList.add(getImageFile("png", "test-image-transparent.png"));
 
-        for(File sourceImageFile : sourceImageFileList) {
+        for (File sourceImageFile : sourceImageFileList) {
 
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
             assertValidBufferedImage(bufferedImage);
@@ -178,7 +176,7 @@ public class ImageConversionJaiTest extends AbstractJaiTest {
         sourceImageFileList.add(getImageFile("gif", "test-image-transparent.gif"));
         sourceImageFileList.add(getImageFile("png", "test-image-transparent.png"));
 
-        for(File sourceImageFile : sourceImageFileList) {
+        for (File sourceImageFile : sourceImageFileList) {
 
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
             assertValidBufferedImage(bufferedImage);

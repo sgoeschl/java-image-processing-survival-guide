@@ -49,11 +49,11 @@ public class ImageResamplingImageIoTest extends BaseImageIoTest {
 
         sourceImageFileList.add(getImageFile("jpg", "marble.jpg"));
         sourceImageFileList.add(getImageFile("png", "marble.png"));
-        // not supported by Java IMageIO
+        // not supported by Java ImageIO
         // sourceImageFileList.add(getImageFile("tiff", "marble.tiff"));
         sourceImageFileList.add(getImageFile("gif", "marble.gif"));
 
-        for(File sourceImageFile : sourceImageFileList) {
+        for (File sourceImageFile : sourceImageFileList) {
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
             assertValidBufferedImage(bufferedImage);
             BufferedImage resampledBufferdImage = resample(bufferedImage, 640, 640);
@@ -77,6 +77,6 @@ public class ImageResamplingImageIoTest extends BaseImageIoTest {
 
         // write as JPEG
         targetImageFile = createOutputFileName("testWriteImageWithQualityAndDpi", sourceImageFile, "jpg");
-        writeBufferedImage(resampledBufferdImage, 0.10f, 123, formatName, targetImageFile);
+        writeBufferedImage(resampledBufferdImage, 0.10f, 3145, formatName, targetImageFile);
     }
 }

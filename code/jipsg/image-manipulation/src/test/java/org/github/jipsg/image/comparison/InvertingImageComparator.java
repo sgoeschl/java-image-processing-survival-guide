@@ -2,8 +2,15 @@ package org.github.jipsg.image.comparison;
 
 import org.github.jipsg.common.image.ops.InvertImageOp;
 
-import java.awt.*;
-import java.awt.image.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
+import java.awt.image.FilteredImageSource;
+import java.awt.image.ImageFilter;
+import java.awt.image.ImageProducer;
+import java.awt.image.RGBImageFilter;
 
 /**
  * Created by sgoeschl on 18/11/14.
@@ -19,7 +26,7 @@ public class InvertingImageComparator {
         // make a transparent image using white
         BufferedImage transparentImage = createTransparentImage(bim2, Color.white);
 
-        final BufferedImage finalImage = new BufferedImage(bim1.getWidth(),bim1.getHeight(),BufferedImage.TYPE_INT_ARGB);
+        final BufferedImage finalImage = new BufferedImage(bim1.getWidth(), bim1.getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = finalImage.createGraphics();
         g.drawImage(invertedImage, 0, 0, null);
         g.drawImage(transparentImage, 0, 0, null);

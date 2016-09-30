@@ -39,18 +39,18 @@ public class ImageScalingTwelveMonkeysTest extends BaseTwelveMonkeysTest {
     @Test
     public void testScaleImages() throws Exception {
 
-        final int[] IMAGE_SCALE_DIMENSIONS = new int[] { 575, 199, 80, 60 };
+        final int[] IMAGE_SCALE_DIMENSIONS = new int[] {575, 199, 80, 60};
 
         File sourceImageDir = new File("../../images/willhaben");
         File[] sourceImageFiles = sourceImageDir.listFiles();
 
         long currentTime = System.currentTimeMillis();
 
-        for(File sourceImageFile : sourceImageFiles) {
+        for (File sourceImageFile : sourceImageFiles) {
 
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
 
-            for(int size : IMAGE_SCALE_DIMENSIONS) {
+            for (int size : IMAGE_SCALE_DIMENSIONS) {
                 BufferedImage scaledBufferedImage = resample(bufferedImage, size, size);
                 bufferedImage = scaledBufferedImage;
                 writeBufferedImage(scaledBufferedImage, "jpeg", createOutputFileName("testScaleImages/" + size, sourceImageFile, "jpeg"));
@@ -59,7 +59,7 @@ public class ImageScalingTwelveMonkeysTest extends BaseTwelveMonkeysTest {
 
         long duration = System.currentTimeMillis() - currentTime;
 
-        System.out.println("Scaling one source image to " + IMAGE_SCALE_DIMENSIONS.length + " previews took " + duration/sourceImageFiles.length + " ms");
+        System.out.println("Scaling one source image to " + IMAGE_SCALE_DIMENSIONS.length + " previews took " + duration / sourceImageFiles.length + " ms");
     }
 
 }

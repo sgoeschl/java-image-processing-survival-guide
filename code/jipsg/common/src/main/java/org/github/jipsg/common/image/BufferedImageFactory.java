@@ -30,15 +30,13 @@ public class BufferedImageFactory {
 
         BufferedImage result = null;
 
-        if(source instanceof File) {
+        if (source instanceof File) {
             File sourceFile = (File) source;
             result = ImageIO.read(sourceFile);
-        }
-        else if(source instanceof String) {
+        } else if (source instanceof String) {
             File sourceFile = new File(source.toString());
             result = ImageIO.read(sourceFile);
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("Don't know how to handle : " + source.getClass().getName());
         }
 

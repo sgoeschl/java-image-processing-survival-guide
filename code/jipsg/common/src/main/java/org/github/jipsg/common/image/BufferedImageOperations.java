@@ -16,14 +16,6 @@
  */
 package org.github.jipsg.common.image;
 
-/**
- * Created with IntelliJ IDEA.
- * User: sgoeschl
- * Date: 13/08/14
- * Time: 21:43
- * To change this template use File | Settings | File Templates.
- */
-
 import org.github.jipsg.common.image.ops.AlphaChannelImageOp;
 
 import java.awt.image.BufferedImage;
@@ -40,10 +32,9 @@ public class BufferedImageOperations {
         // Since JDK 5 the JPG conversion messes up images with alpha-channels
         // therefore fill the alpha-channel with white pixels
 
-        if(src.getColorModel().hasAlpha()) {
+        if (src.getColorModel().hasAlpha()) {
             return apply(src, new AlphaChannelImageOp());
-        }
-        else {
+        } else {
             return src;
         }
     }

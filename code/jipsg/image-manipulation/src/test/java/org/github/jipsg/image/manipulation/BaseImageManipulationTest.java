@@ -20,7 +20,7 @@ import org.github.jipsg.common.AbstractImageTest;
 import org.github.jipsg.common.image.BufferedImageUtils;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Dimension;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -63,8 +63,8 @@ public class BaseImageManipulationTest extends AbstractImageTest {
         Dimension boundaryDimension = new Dimension(width, height);
         Dimension scaledDimension = BufferedImageUtils.getScaledDimension(imageDimension, boundaryDimension);
 
-        double scaleX = scaledDimension.getWidth()/bufferedImage.getWidth();
-        double scaleY = scaledDimension.getHeight()/bufferedImage.getHeight();
+        double scaleX = scaledDimension.getWidth() / bufferedImage.getWidth();
+        double scaleY = scaledDimension.getHeight() / bufferedImage.getHeight();
 
         AffineTransform scaleTransform = AffineTransform.getScaleInstance(scaleX, scaleY);
         AffineTransformOp biLinearScaleOp = new AffineTransformOp(scaleTransform, AffineTransformOp.TYPE_BILINEAR);

@@ -35,7 +35,7 @@ public class ImageScalingThumbnailatorTest extends TestCase {
 
         File outputDir = new File(new File(new File(new File("./target"), "out"), directory), "thumbnailator");
 
-        if(!outputDir.exists()) {
+        if (!outputDir.exists()) {
             outputDir.mkdirs();
         }
 
@@ -54,7 +54,7 @@ public class ImageScalingThumbnailatorTest extends TestCase {
     @Test
     public void testScaleImages() throws Exception {
 
-        final int[] IMAGE_SCALE_DIMENSIONS = new int[] { 575, 199, 80, 60 };
+        final int[] IMAGE_SCALE_DIMENSIONS = new int[] {575, 199, 80, 60};
         final float QUALITY = 0.8f;
 
         File sourceImageDir = new File("../../images/willhaben");
@@ -62,11 +62,11 @@ public class ImageScalingThumbnailatorTest extends TestCase {
 
         long currentTime = System.currentTimeMillis();
 
-        for(File sourceImageFile : sourceImageFiles) {
+        for (File sourceImageFile : sourceImageFiles) {
 
             BufferedImage bufferedImage = ImageIO.read(sourceImageFile);
 
-            for(int size : IMAGE_SCALE_DIMENSIONS) {
+            for (int size : IMAGE_SCALE_DIMENSIONS) {
 
                 BufferedImage scaledBufferedImage = Thumbnails.of(bufferedImage).
                         width(size).
@@ -84,7 +84,7 @@ public class ImageScalingThumbnailatorTest extends TestCase {
 
         long duration = System.currentTimeMillis() - currentTime;
 
-        System.out.println("Scaling one source image to " + IMAGE_SCALE_DIMENSIONS.length + " previews took " + duration/sourceImageFiles.length + " ms");
+        System.out.println("Scaling one source image to " + IMAGE_SCALE_DIMENSIONS.length + " previews took " + duration / sourceImageFiles.length + " ms");
     }
 
 

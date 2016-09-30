@@ -47,6 +47,7 @@ public class ImageLoadImageIoTest extends BaseImageIoTest {
 
     /**
      * List available image formats.
+     * <p>
      * see http://examples.javacodegeeks.com/desktop-java/jai/list-read-write-supported-image-formats/
      */
     @Test
@@ -108,7 +109,7 @@ public class ImageLoadImageIoTest extends BaseImageIoTest {
         sourceImageFileList.add(getImageFile("gif", "marble.gif"));
         // sourceImageFileList.add(getImageFile("jp2", "marble.jp2"));
 
-        for(File sourceImageFile : sourceImageFileList) {
+        for (File sourceImageFile : sourceImageFileList) {
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
             assertValidBufferedImage(bufferedImage);
         }

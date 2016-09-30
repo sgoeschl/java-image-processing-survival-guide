@@ -16,15 +16,7 @@
  */
 package org.github.jipsg.common.image;
 
-/**
- * Created with IntelliJ IDEA.
- * User: sgoeschl
- * Date: 13/08/14
- * Time: 21:43
- * To change this template use File | Settings | File Templates.
- */
-
-import java.awt.*;
+import java.awt.Dimension;
 
 /**
  * Contains ready-to use image operations without additional dependencies.

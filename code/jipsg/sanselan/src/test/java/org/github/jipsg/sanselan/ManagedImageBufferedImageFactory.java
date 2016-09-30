@@ -16,10 +16,13 @@
  */
 package org.github.jipsg.sanselan;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
-
 import org.apache.commons.imaging.common.BufferedImageFactory;
+
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Transparency;
+import java.awt.image.BufferedImage;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,7 +32,7 @@ import org.apache.commons.imaging.common.BufferedImageFactory;
  * To change this template use File | Settings | File Templates.
  */
 public class ManagedImageBufferedImageFactory implements
-    BufferedImageFactory {
+        BufferedImageFactory {
 
     public BufferedImage getColorBufferedImage(final int width, final int height,
                                                final boolean hasAlpha) {

@@ -1,12 +1,13 @@
 package org.github.jipsg.image.filter;
 
-import java.awt.*;
+import java.awt.RenderingHints;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.ColorModel;
 import java.util.Arrays;
+
 /**
  * Copy & pasted from https://code.google.com/p/jalbum-autocorrect/source/browse/AutoCorrection/src/net/jalbum/filters/auto/AutoCorrectionFilter.java
  */
@@ -25,27 +26,22 @@ public class AutoCorrectionFilter implements BufferedImageOp {
     private boolean colors = true;
     private boolean colorsPossible = false;
 
-    @Override
     public Rectangle2D getBounds2D(BufferedImage src) {
         return null;
     }
 
-    @Override
     public BufferedImage createCompatibleDestImage(BufferedImage src, ColorModel destCM) {
         return null;
     }
 
-    @Override
     public Point2D getPoint2D(Point2D srcPt, Point2D dstPt) {
         return null;
     }
 
-    @Override
     public RenderingHints getRenderingHints() {
         return null;
     }
 
-    @Override
     public BufferedImage filter(BufferedImage bi, BufferedImage dest) {
         int width = bi.getWidth();
         int height = bi.getHeight();
@@ -95,7 +91,7 @@ public class AutoCorrectionFilter implements BufferedImageOp {
         int min = getMinimum(clipNum, lumPixels);
 
         double contrast = 255.0 / (max - min);
-        double brightness = 127.5 - ((max + min)/2.0);
+        double brightness = 127.5 - ((max + min) / 2.0);
 
         changeContrastBrightness(contrast, brightness);
 
@@ -103,6 +99,7 @@ public class AutoCorrectionFilter implements BufferedImageOp {
 
     /**
      * searches for the maximum in the given array
+     *
      * @param clipNum
      * @param arr
      * @return maximum
@@ -123,6 +120,7 @@ public class AutoCorrectionFilter implements BufferedImageOp {
 
     /**
      * searches for the minimum in the given array
+     *
      * @param clipNum
      * @param arr
      * @return minimum
@@ -143,6 +141,7 @@ public class AutoCorrectionFilter implements BufferedImageOp {
 
     /**
      * adjust the auto contrast which means to change the brightness and contrast
+     *
      * @param contrast
      * @param brightness
      */
@@ -207,6 +206,7 @@ public class AutoCorrectionFilter implements BufferedImageOp {
 
     /**
      * adjusts the auto levels
+     *
      * @param factors values for the adjustment
      */
     private void changeLevels(double[] factors) {
@@ -277,6 +277,7 @@ public class AutoCorrectionFilter implements BufferedImageOp {
 
     /**
      * searches for the index of the first value
+     *
      * @param arr
      * @return index
      */
@@ -295,6 +296,7 @@ public class AutoCorrectionFilter implements BufferedImageOp {
 
     /**
      * clipped the value when necessary (value should be between 0-255)
+     *
      * @param r red
      * @param g green
      * @param b blue

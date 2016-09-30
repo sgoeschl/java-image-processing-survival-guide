@@ -51,7 +51,7 @@ public class ImageResamplingSanselanTest extends BaseSanselanTest {
         sourceImageFileList.add(getImageFile("tiff", "marble.tiff"));
         sourceImageFileList.add(getImageFile("gif", "marble.gif"));
 
-        for(File sourceImageFile : sourceImageFileList) {
+        for (File sourceImageFile : sourceImageFileList) {
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
             assertValidBufferedImage(bufferedImage);
             BufferedImage resampledBufferdImage = resample(bufferedImage, 640, 480);

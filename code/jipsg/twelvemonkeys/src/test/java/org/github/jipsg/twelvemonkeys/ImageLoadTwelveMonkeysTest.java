@@ -16,6 +16,12 @@
  */
 package org.github.jipsg.twelvemonkeys;
 
+import org.junit.Before;
+import org.junit.Test;
+
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
@@ -23,12 +29,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
-
-import org.junit.Before;
-import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
@@ -48,7 +48,7 @@ public class ImageLoadTwelveMonkeysTest extends BaseTwelveMonkeysTest {
 
     /**
      * List available image formats.
-     *
+     * <p>
      * see http://examples.javacodegeeks.com/desktop-java/imageio/list-read-write-supported-image-formats/
      */
     @Test
@@ -109,7 +109,7 @@ public class ImageLoadTwelveMonkeysTest extends BaseTwelveMonkeysTest {
         sourceImageFileList.add(getImageFile("tiff", "marble.tiff"));
         sourceImageFileList.add(getImageFile("gif", "marble.gif"));
 
-        for(File sourceImageFile : sourceImageFileList) {
+        for (File sourceImageFile : sourceImageFileList) {
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
             assertValidBufferedImage(bufferedImage);
         }
@@ -210,7 +210,7 @@ public class ImageLoadTwelveMonkeysTest extends BaseTwelveMonkeysTest {
 
         // split the multi-page TIFF
         int pages = imageReader.getNumImages(true);
-        for(int i=0; i<pages; i++) {
+        for (int i = 0; i < pages; i++) {
             BufferedImage bufferedImage = imageReader.read(i);
             assertValidBufferedImage(bufferedImage);
         }
@@ -234,7 +234,7 @@ public class ImageLoadTwelveMonkeysTest extends BaseTwelveMonkeysTest {
 
         // split the multi-page TIFF
         int pages = imageReader.getNumImages(true);
-        for(int i=0; i<pages; i++) {
+        for (int i = 0; i < pages; i++) {
             BufferedImage bufferedImage = imageReader.read(i);
             assertValidBufferedImage(bufferedImage);
         }

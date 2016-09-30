@@ -21,7 +21,7 @@ import org.github.jipsg.common.AbstractImageTest;
 import org.github.jipsg.common.image.BufferedImageUtils;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
