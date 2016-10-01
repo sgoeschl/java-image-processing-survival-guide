@@ -19,6 +19,7 @@
         <module>twelvemonkeys</module>
         <module>image-manipulation</module>
         <module>thumbnailator</module>
+        <module>pdfbox</module>
     </modules>
 
 </project>

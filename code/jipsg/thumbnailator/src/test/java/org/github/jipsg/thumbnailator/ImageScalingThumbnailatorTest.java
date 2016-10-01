@@ -84,8 +84,6 @@ public class ImageScalingThumbnailatorTest extends TestCase {
 
         long duration = System.currentTimeMillis() - currentTime;
 
-        System.out.println("Scaling one source image to " + IMAGE_SCALE_DIMENSIONS.length + " previews took " + duration / sourceImageFiles.length + " ms");
+        System.out.println("Scaling source images to " + IMAGE_SCALE_DIMENSIONS.length + " previews took " + duration / sourceImageFiles.length + " ms");
     }
-
-
 }

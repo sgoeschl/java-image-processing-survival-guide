@@ -195,7 +195,7 @@ public class ImageLoadImageIoTest extends BaseImageIoTest {
     // ======================================================================
 
     @Test
-    public void testLoadTImage() throws Exception {
+    public void testLoadLargeImage() throws Exception {
         BufferedImage bufferedImage = createBufferedImage(getImageFile("bombs", "picture-1G-19000x19000.png"));
         assertEquals(19000, bufferedImage.getHeight());
         assertEquals(19000, bufferedImage.getWidth());

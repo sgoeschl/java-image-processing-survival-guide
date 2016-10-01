@@ -53,12 +53,15 @@ public class BaseImageIoTest extends AbstractImageTest {
     }
 
     @Override
-    public void writeBufferedImage(BufferedImage bufferedImage, String formatName, File file) throws Exception {
-        ImageIO.write(bufferedImage, formatName, file);
+    public void writeBufferedImage(BufferedImage bufferedImage, String formatName, File targetFile) throws Exception {
+        System.out.println("Saving " + targetFile.getPath());
+        ImageIO.write(bufferedImage, formatName, targetFile);
     }
 
     @Override
     public void writeBufferedImage(BufferedImage bufferedImage, float quality, int dpi, String formatName, File targetFile) throws Exception {
+
+        System.out.println("Saving " + targetFile.getPath());
 
         if (formatName.equalsIgnoreCase("jpg") || formatName.equalsIgnoreCase("jpeg")) {
             JPEGImageWriter imageWriter = (JPEGImageWriter) ImageIO.getImageWritersBySuffix(formatName).next();

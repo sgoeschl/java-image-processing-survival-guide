@@ -50,7 +50,6 @@ public class ImageConversionTwelveMonkeysTest extends BaseTwelveMonkeysTest {
         List<File> sourceImageFileList = new ArrayList<File>();
 
         // sourceImageFileList.add(getImageFile("bmp", "marble.bmp"));
-        sourceImageFileList.add(getImageFile("gif", "house-photo.gif"));
         sourceImageFileList.add(getImageFile("gif", "marble.gif"));
         // sourceImageFileList.add(getImageFile("jp2", "marble.jp2"));
         sourceImageFileList.add(getImageFile("jpg", "marble.jpg"));
@@ -72,7 +71,6 @@ public class ImageConversionTwelveMonkeysTest extends BaseTwelveMonkeysTest {
         List<File> sourceImageFileList = new ArrayList<File>();
 
         // sourceImageFileList.add(getImageFile("bmp", "marble.bmp"));
-        sourceImageFileList.add(getImageFile("gif", "house-photo.gif"));
         sourceImageFileList.add(getImageFile("gif", "marble.gif"));
         // sourceImageFileList.add(getImageFile("jp2", "marble.jp2"));
         sourceImageFileList.add(getImageFile("jpg", "marble.jpg"));
@@ -132,7 +130,6 @@ public class ImageConversionTwelveMonkeysTest extends BaseTwelveMonkeysTest {
 
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
             assertValidBufferedImage(bufferedImage);
-
             assertTrue("Expecting transparency", bufferedImage.getColorModel().hasAlpha());
             assertTrue("Expecting non-RGB color model", bufferedImage.getType() == BufferedImage.TYPE_4BYTE_ABGR || bufferedImage.getType() == BufferedImage.TYPE_BYTE_INDEXED);
 
@@ -170,7 +167,7 @@ public class ImageConversionTwelveMonkeysTest extends BaseTwelveMonkeysTest {
             assertFalse("Expecting no transparency", rgbBufferedImage.getColorModel().hasAlpha());
             assertEquals("Expecting RGB color model", BufferedImage.TYPE_INT_RGB, rgbBufferedImage.getType());
 
-            File targetImageFile = createOutputFileName("testWriteTransparentImagesWithAwtAsJpeg", sourceImageFile, formatName);
+            File targetImageFile = createOutputFileName("testWriteTransparentImagesUsingRGBAsJpeg", sourceImageFile, formatName);
             writeBufferedImage(rgbBufferedImage, formatName, targetImageFile);
         }
     }

@@ -108,6 +108,7 @@ public class ImageLoadTwelveMonkeysTest extends BaseTwelveMonkeysTest {
         sourceImageFileList.add(getImageFile("png", "marble.png"));
         sourceImageFileList.add(getImageFile("tiff", "marble.tiff"));
         sourceImageFileList.add(getImageFile("gif", "marble.gif"));
+        // sourceImageFileList.add(getImageFile("jp2", "marble.jp2"));
 
         for (File sourceImageFile : sourceImageFileList) {
             BufferedImage bufferedImage = createBufferedImage(sourceImageFile);

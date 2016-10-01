@@ -28,7 +28,7 @@ public class BufferedImageFactory {
 
     public static BufferedImage create(Object source) throws Exception {
 
-        BufferedImage result = null;
+        BufferedImage result;
 
         if (source instanceof File) {
             File sourceFile = (File) source;
@@ -44,6 +44,7 @@ public class BufferedImageFactory {
     }
 
     public static boolean writeBufferedImage(BufferedImage bufferedImage, String formatName, File file) throws Exception {
+        System.out.println("Saving " + file.getPath());
         return ImageIO.write(bufferedImage, formatName, file);
     }
 }
