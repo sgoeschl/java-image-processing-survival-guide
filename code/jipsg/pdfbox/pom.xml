@@ -18,6 +18,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.github.jipsg</groupId>
+            <artifactId>jipsg-imageio</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
             <version>1.8.12</version>

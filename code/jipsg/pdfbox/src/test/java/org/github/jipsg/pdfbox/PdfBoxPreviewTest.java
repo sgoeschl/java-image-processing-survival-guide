@@ -16,19 +16,88 @@
  */
 package org.github.jipsg.pdfbox;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.github.jipsg.imageio.BaseImageIoTest;
+import org.junit.Before;
 import org.junit.Test;
 
-/**
- * Load various images.
- */
-public class PdfBoxPreviewTest {
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
-    // ======================================================================
-    // Image format conversion
-    // ======================================================================
+import static java.awt.image.BufferedImage.TYPE_INT_RGB;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+
+/**
+ * PDF manipulation code based on Apache PDFBox.
+ */
+public class PdfBoxPreviewTest extends BaseImageIoTest {
+
+    private final static int DPI_72 = 72;
+    private final static int START_PAGE = 1;
+    private final static int LAST_PAGE = 16;
+
+    @Before
+    public void setup() {
+        super.setModuleName("pdfbox");
+        super.setup();
+    }
 
     @Test
-    public void testMe() throws Exception {
+    public void shouldCreatePdfPreviewImages() throws Exception {
 
+        final int imageType = TYPE_INT_RGB;
+        final PDDocument pdDocument = PDDocument.load("./../../pdf/erste-document-01.pdf");
+
+        final List<BufferedImage> images = toImages(pdDocument, START_PAGE, LAST_PAGE, DPI_72, imageType);
+
+        assertNotNull(images);
+        assertFalse(images.isEmpty());
+        assertEquals(images.get(0).getType(), imageType);
+
+        for (int i = 0; i < images.size(); i++) {
+            File targetImageFile = createOutputFileName("shouldCreatePdfPreviewImages", "page-" + i, "jpeg");
+            writeBufferedImage(images.get(i), "jpeg", targetImageFile);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<BufferedImage> toImages(PDDocument pdDocument, int startPage, int endPage, int resolution, int imageType) throws Exception {
+        final List<BufferedImage> result = new ArrayList<BufferedImage>();
+        final List<PDPage> pages = pdDocument.getDocumentCatalog().getAllPages();
+        final int pagesSize = pages.size();
+
+        for (int i = startPage - 1; i < endPage && i < pagesSize; i++) {
+            PDPage page = pages.get(i);
+            PDRectangle cropBox = page.findCropBox();
+            float width = cropBox.getWidth();
+            float height = cropBox.getHeight();
+            int currResolution = calculateResolution(resolution, width, height);
+            BufferedImage image = page.convertToImage(imageType, currResolution);
+
+            if (image != null) {
+                result.add(image);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Calculate the resolution being used assuming that the DPI is used
+     * for an A4 page.
+     */
+    protected int calculateResolution(int dpi, float cropBoxWidth, float cropBoxHeight) {
+        int result;
+
+        float maxPoints = Math.max(cropBoxWidth, cropBoxHeight);
+        float pointForRequestedResolution = 29.7f * dpi / 2.54f;
+        result = Math.round((pointForRequestedResolution * DPI_72 / maxPoints));
+        return result;
     }
 }
