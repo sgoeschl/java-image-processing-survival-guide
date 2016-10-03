@@ -43,6 +43,7 @@ public class BaseTwelveMonkeysTest extends AbstractImageTest {
 
     @Override
     public void writeBufferedImage(BufferedImage bufferedImage, String formatName, File file) throws Exception {
+        System.out.println("Saving " + file.getPath());
         ImageIO.write(bufferedImage, formatName, file);
     }
 

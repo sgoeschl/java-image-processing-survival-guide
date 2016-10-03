@@ -83,7 +83,7 @@ public abstract class AbstractImageTest {
 
     protected File createOutputFileName(String directory, String fileName, String format) {
 
-        File outputDir = new File(new File(new File(new File("./target"), "out"), directory), this.moduleName);
+        File outputDir = new File(new File(new File(new File("./target"), "out"), this.moduleName), directory);
 
         if (!outputDir.exists()) {
             outputDir.mkdirs();

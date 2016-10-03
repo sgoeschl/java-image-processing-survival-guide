@@ -38,14 +38,15 @@ import static org.junit.Assert.assertNotNull;
  */
 public class PdfBoxPreviewTest extends BaseImageIoTest {
 
-    private final static int DPI_72 = 72;
-    private final static int START_PAGE = 1;
-    private final static int LAST_PAGE = 16;
+    private static final int DPI_72 = 72;
+    private static final int START_PAGE = 1;
+    private static final int LAST_PAGE = 16;
 
     @Before
+    @Override
     public void setup() {
-        super.setModuleName("pdfbox");
         super.setup();
+        setModuleName("pdfbox");
     }
 
     @Test
