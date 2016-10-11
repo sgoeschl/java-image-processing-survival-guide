@@ -53,6 +53,8 @@ public class PdfBoxPreviewTest extends BaseImageIoTest {
     public void shouldCreatePdfPreviewImages() throws Exception {
 
         final int imageType = TYPE_INT_RGB;
+
+        // final PDDocument pdDocument = PDDocument.load("./../../pdf/test-large-scan.pdf");
         final PDDocument pdDocument = PDDocument.load("./../../pdf/erste-document-01.pdf");
 
         final List<BufferedImage> images = toImages(pdDocument, START_PAGE, LAST_PAGE, DPI_72, imageType);
