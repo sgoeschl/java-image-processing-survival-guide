@@ -33,7 +33,7 @@ public class ImageScalingThumbnailatorTest extends TestCase {
 
     public File createOutputFileName(String directory, String fileName, String format) {
 
-        File outputDir = new File(new File(new File(new File("./target"), "out"), directory), "thumbnailator");
+        File outputDir = new File(new File(new File(new File("./target"), "out"), "thumbnailator"), directory);
 
         if (!outputDir.exists()) {
             outputDir.mkdirs();

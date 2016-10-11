@@ -171,4 +171,30 @@ public class ImageConversionTwelveMonkeysTest extends BaseTwelveMonkeysTest {
             writeBufferedImage(rgbBufferedImage, formatName, targetImageFile);
         }
     }
+
+    // ======================================================================
+    // TIFF Images
+    // ======================================================================
+
+    @Test
+    public void testConvertTiffImagesToJpeg() throws Exception {
+
+        String formatName = "jpeg";
+        List<File> sourceImageFileList = new ArrayList<File>();
+
+        sourceImageFileList.add(getImageFile("tiff", "marble.tiff"));
+        // sourceImageFileList.add(getImageFile("tiff", "test-single-gray-compression-type-2.tiff"));
+        sourceImageFileList.add(getImageFile("tiff", "test-single-gray-compression-type-3.tiff"));
+        sourceImageFileList.add(getImageFile("tiff", "test-single-gray-compression-type-4.tiff"));
+        sourceImageFileList.add(getImageFile("tiff", "test-multi-gray-compression-type-4.tiff"));
+        sourceImageFileList.add(getImageFile("tiff", "test-multi-rgb-compression-type-7.tiff"));
+        // sourceImageFileList.add(getImageFile("tiff", "test-single-cmyk-compression-lzw.tiff"));
+
+        for (File sourceImageFile : sourceImageFileList) {
+            BufferedImage bufferedImage = createBufferedImage(sourceImageFile);
+            assertValidBufferedImage(bufferedImage);
+            File targetImageFile = createOutputFileName("testConvertTiffImageWriteToJpeg", sourceImageFile, formatName);
+            writeBufferedImage(bufferedImage, formatName, targetImageFile);
+        }
+    }
 }

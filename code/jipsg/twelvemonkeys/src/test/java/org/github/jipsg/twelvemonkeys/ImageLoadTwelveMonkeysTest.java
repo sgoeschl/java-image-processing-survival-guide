@@ -38,6 +38,7 @@ import static org.junit.Assert.assertEquals;
 public class ImageLoadTwelveMonkeysTest extends BaseTwelveMonkeysTest {
 
     @Before
+    @Override
     public void setup() {
         super.setup();
     }
@@ -59,8 +60,8 @@ public class ImageLoadTwelveMonkeysTest extends BaseTwelveMonkeysTest {
         // Get list of all informal format names understood by the current set of registered readers
         String[] formatNames = ImageIO.getReaderFormatNames();
 
-        for (int i = 0; i < formatNames.length; i++) {
-            set.add(formatNames[i].toLowerCase());
+        for (final String formatName : formatNames) {
+            set.add(formatName.toLowerCase());
         }
         System.out.println("Supported read formats: " + set);
 
@@ -69,8 +70,8 @@ public class ImageLoadTwelveMonkeysTest extends BaseTwelveMonkeysTest {
         // Get list of all informal format names understood by the current set of registered writers
         formatNames = ImageIO.getWriterFormatNames();
 
-        for (int i = 0; i < formatNames.length; i++) {
-            set.add(formatNames[i].toLowerCase());
+        for (final String formatName : formatNames) {
+            set.add(formatName.toLowerCase());
         }
         System.out.println("Supported write formats: " + set);
 
@@ -79,8 +80,8 @@ public class ImageLoadTwelveMonkeysTest extends BaseTwelveMonkeysTest {
         // Get list of all MIME types understood by the current set of registered readers
         formatNames = ImageIO.getReaderMIMETypes();
 
-        for (int i = 0; i < formatNames.length; i++) {
-            set.add(formatNames[i].toLowerCase());
+        for (final String formatName : formatNames) {
+            set.add(formatName.toLowerCase());
         }
         System.out.println("Supported read MIME types: " + set);
 
@@ -89,8 +90,8 @@ public class ImageLoadTwelveMonkeysTest extends BaseTwelveMonkeysTest {
         // Get list of all MIME types understood by the current set of registered writers
         formatNames = ImageIO.getWriterMIMETypes();
 
-        for (int i = 0; i < formatNames.length; i++) {
-            set.add(formatNames[i].toLowerCase());
+        for (final String formatName : formatNames) {
+            set.add(formatName.toLowerCase());
         }
         System.out.println("Supported write MIME types: " + set);
     }
@@ -142,7 +143,6 @@ public class ImageLoadTwelveMonkeysTest extends BaseTwelveMonkeysTest {
 
     /**
      * Load a TIFF image with compression 2.
-     * Fails with  "ArrayIndexOutOfBoundsException"
      */
     @Test
     public void testLoadTiffGrayWithCompression2() throws Exception {
@@ -151,7 +151,6 @@ public class ImageLoadTwelveMonkeysTest extends BaseTwelveMonkeysTest {
 
     /**
      * Load a TIFF image with compression 3.
-     * Fails with "javax.imageio.IIOException: Unsupported TIFF Compression value: 3"
      */
     @Test
     public void testLoadTiffWithCompression3() throws Exception {
@@ -160,7 +159,6 @@ public class ImageLoadTwelveMonkeysTest extends BaseTwelveMonkeysTest {
 
     /**
      * Load a TIFF image with compression 4.
-     * Fails with "javax.imageio.IIOException: Unsupported TIFF Compression value: 4"
      */
     @Test
     public void testLoadTiffWithCompression4() throws Exception {
@@ -169,7 +167,6 @@ public class ImageLoadTwelveMonkeysTest extends BaseTwelveMonkeysTest {
 
     /**
      * Load a multi-page TIFF.
-     * Fails with a "javax.imageio.IIOException: Unsupported TIFF Compression value: 4"
      */
     @Test
     public void testLoadTiffMultiPageGray() throws Exception {
@@ -199,6 +196,7 @@ public class ImageLoadTwelveMonkeysTest extends BaseTwelveMonkeysTest {
     /**
      * Load a multi-page TIFF image and split it into its individual pages.
      */
+    @Test
     public void testExtractPagesFromMultiPageTiffCompression4() throws Exception {
 
         File sourceImageFile = getImageFile("tiff", "test-multi-gray-compression-type-4.tiff");
