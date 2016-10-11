@@ -43,12 +43,13 @@ public class BaseTwelveMonkeysTest extends AbstractImageTest {
 
     @Override
     public void writeBufferedImage(BufferedImage bufferedImage, String formatName, File file) throws Exception {
+        System.out.println("Saving " + file.getPath());
         ImageIO.write(bufferedImage, formatName, file);
     }
 
     @Override
     public void writeBufferedImage(BufferedImage bufferedImage, float quality, int dpi, String formatName, File file) throws Exception {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException();
     }
 
     @Override

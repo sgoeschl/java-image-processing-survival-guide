@@ -21,6 +21,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.imageio.ImageIO;
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
@@ -191,13 +192,14 @@ public class ImageLoadImageIoTest extends BaseImageIoTest {
     }
 
     // ======================================================================
-    // Decompression Bobs
+    // Decompression Bombs
     // ======================================================================
 
     @Test
     public void testLoadLargeImage() throws Exception {
         BufferedImage bufferedImage = createBufferedImage(getImageFile("bombs", "picture-1G-19000x19000.png"));
-        assertEquals(19000, bufferedImage.getHeight());
-        assertEquals(19000, bufferedImage.getWidth());
+        Dimension dimension = new Dimension(bufferedImage.getWidth(), bufferedImage.getHeight());
+        assertEquals(19000, dimension.height);
+        assertEquals(19000, dimension.width);
     }
 }
