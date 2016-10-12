@@ -12,12 +12,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>jh-labs</groupId>
-            <artifactId>filters</artifactId>
-            <version>1.0</version>
-            <scope>compile</scope>
-        </dependency>        
-        <dependency>
             <groupId>org.github.jipsg</groupId>
             <artifactId>jipsg-imageio</artifactId>
             <version>${project.version}</version>
