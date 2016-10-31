@@ -7,7 +7,7 @@ For a few customers I needed to do a lot of things with images
 * Converting PDFs into JPEGs
 * Resample images
 * Handle CMYK image
-* Handle images with alpha-cannel
+* Handle images with alpha-channel
 * Apply image operations such as geyscaling, dithering and sharpening
 * Setting image compression and DPI for storing JPGs
 
